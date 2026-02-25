@@ -16,7 +16,12 @@ public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapp
     @Getter
     protected final IUnconfinedFluidTank delegate;
 
-    protected final @Nullable UnconfinedFluidSlotView[] overridden = new UnconfinedFluidSlotView[delegate.getSlotCount()];
+    protected final @Nullable UnconfinedFluidSlotView[] overridden;
+
+    public UnconfinedFluidTankOverridden(IUnconfinedFluidTank delegate) {
+        this.delegate = delegate;
+        this.overridden = new UnconfinedFluidSlotView[delegate.getSlotCount()];
+    }
 
     /// Set the slot overridden, or cancel the overridden by passing a `null`.
     ///

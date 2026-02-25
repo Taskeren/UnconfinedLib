@@ -18,8 +18,14 @@ public class UnconfinedFluidTankCached implements IUnconfinedFluidTank.Wrapper {
     @Getter
     protected final IUnconfinedFluidTank delegate;
 
-    protected final UnconfinedFluidSlotView[] fluidSlotViews = new UnconfinedFluidSlotView[delegate.getSlotCount()];
-    protected final FluidStackTank[] fluidStackTanks = new FluidStackTank[delegate.getSlotCount()];
+    protected final UnconfinedFluidSlotView[] fluidSlotViews;
+    protected final FluidStackTank[] fluidStackTanks;
+
+    public UnconfinedFluidTankCached(IUnconfinedFluidTank delegate) {
+        this.delegate = delegate;
+        this.fluidSlotViews = new UnconfinedFluidSlotView[delegate.getSlotCount()];
+        this.fluidStackTanks = new FluidStackTank[delegate.getSlotCount()];
+    }
 
     @Override
     public UnconfinedFluidSlotView getFluidSlotView(int slot) {
