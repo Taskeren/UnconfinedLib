@@ -1,4 +1,4 @@
-package com.myname.mymodid;
+package unconfined.mod;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package com.myname.mymodid;
+package unconfined.mod;
 
 public class ClientProxy extends CommonProxy {
 

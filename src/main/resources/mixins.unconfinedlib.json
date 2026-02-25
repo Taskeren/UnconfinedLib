@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "refmap": "mixins.unconfinedlib.refmap.json",
+  "target": "@env(DEFAULT)",
+  "package": "unconfined.core.mixins",
+  "mixins": [
+    "multifluid.MTEBasicMachineMixin",
+    "multifluid.MTEBasicMachineImplMixin"
+  ]
+}

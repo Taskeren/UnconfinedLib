@@ -9,6 +9,9 @@ pluginManagement {
                 includeGroupByRegex("com\\.gtnewhorizons\\..+")
             }
         }
+        maven {
+            url = uri("https://jitpack.io")
+        }
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
