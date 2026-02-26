@@ -15,14 +15,16 @@ public final class UnconfinedUtils {
 
     @NullUnmarked
     public static FluidStack[] copyArray(FluidStack[] array) {
-        return Utils.make(new FluidStack[array.length], copy -> {
-            for (int i = 0; i < array.length; i++) {
-                FluidStack fluidStack = array[i];
-                if (fluidStack != null) {
-                    copy[i] = fluidStack.copy();
+        return Utils.make(
+            new FluidStack[array.length], copy -> {
+                for (int i = 0; i < array.length; i++) {
+                    FluidStack fluidStack = array[i];
+                    if (fluidStack != null) {
+                        copy[i] = fluidStack.copy();
+                    }
                 }
             }
-        });
+        );
     }
 
     public static final class Persist {
@@ -40,14 +42,16 @@ public final class UnconfinedUtils {
         }
 
         public static NBTTagCompound saveArray(@Nullable FluidStack[] fluidStacks) {
-            return Utils.make(new NBTTagCompound(), tag -> {
-                for (int i = 0; i < fluidStacks.length; i++) {
-                    FluidStack fluid = fluidStacks[i];
-                    if (fluid != null) {
-                        tag.setTag(String.valueOf(i), fluid.writeToNBT(new NBTTagCompound()));
+            return Utils.make(
+                new NBTTagCompound(), tag -> {
+                    for (int i = 0; i < fluidStacks.length; i++) {
+                        FluidStack fluid = fluidStacks[i];
+                        if (fluid != null) {
+                            tag.setTag(String.valueOf(i), fluid.writeToNBT(new NBTTagCompound()));
+                        }
                     }
                 }
-            });
+            );
         }
     }
 }

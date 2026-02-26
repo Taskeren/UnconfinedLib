@@ -21,8 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import unconfined.api.gregtech.UnconfinedMultiFluidBasicMachine;
 import unconfined.util.UnconfinedUtils;
+import unconfined.util.Utils;
 import unconfined.util.fluidtank.IUnconfinedFluidTank;
-import unconfined.util.fluidtank.utils.Utils;
 
 /// The injection to make multi-fluid basic work.
 ///
@@ -53,7 +53,7 @@ public class MTEBasicMachineMixin {
         // check if the output tank can hold all the recipe output
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             IUnconfinedFluidTank output = mf.getOutputFluids();
-            return Utils.canOutput(output, recipe.mFluidOutputs);
+            return unconfined.util.fluidtank.utils.Utils.canOutput(output, recipe.mFluidOutputs);
         }
         return original.call(instance, aOutput);
     }
@@ -90,7 +90,10 @@ public class MTEBasicMachineMixin {
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             mf.getInputFluids().loadData(aNBT.getCompoundTag("unconfined$inputFluids"));
             mf.getOutputFluids().loadData(aNBT.getCompoundTag("unconfined$outputFluids"));
-            UnconfinedUtils.Persist.loadToArray(aNBT.getCompoundTag("unconfined$recipeOutput"), mf.getRecipeOutputFluids());
+            UnconfinedUtils.Persist.loadToArray(
+                aNBT.getCompoundTag("unconfined$recipeOutput"),
+                mf.getRecipeOutputFluids()
+            );
         }
     }
 
@@ -120,18 +123,25 @@ public class MTEBasicMachineMixin {
 
     @Unique
     private FluidSlotWidget unconfined$createFluidSlot(IDrawable[] backgrounds, Pos2d pos, FluidStackTank tank, boolean isOutput) {
-        return unconfined.util.Utils.make(new FluidSlotWidget(tank), w -> {
-            if (isOutput) {
-                w.setInteraction(true, false);
+        return Utils.make(
+            new FluidSlotWidget(tank), w -> {
+                if (isOutput) {
+                    w.setInteraction(true, false);
+                }
+                w.setBackground(backgrounds).setPos(pos);
             }
-            w.setBackground(backgrounds).setPos(pos);
-        });
+        );
     }
 
     @WrapOperation(method = "lambda$addIOSlots$5", at = @At(value = "INVOKE", target = "Lgregtech/api/metatileentity/implementations/MTEBasicMachine;createFluidInputSlot([Lcom/gtnewhorizons/modularui/api/drawable/IDrawable;Lcom/gtnewhorizons/modularui/api/math/Pos2d;)Lcom/gtnewhorizons/modularui/common/widget/FluidSlotWidget;"))
     private FluidSlotWidget unconfined$createInputFluidSlot(MTEBasicMachine instance, IDrawable[] backgrounds, Pos2d pos, Operation<FluidSlotWidget> original, @Local(argsOnly = true) int index) {
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
-            return unconfined$createFluidSlot(backgrounds, pos, mf.getInputFluids().getFluidStackTankForSlot(index), false);
+            return unconfined$createFluidSlot(
+                backgrounds,
+                pos,
+                mf.getInputFluids().getFluidStackTankForSlot(index),
+                false
+            );
         }
         return original.call(instance, backgrounds, pos);
     }
@@ -139,7 +149,12 @@ public class MTEBasicMachineMixin {
     @WrapOperation(method = "lambda$addIOSlots$6", at = @At(value = "INVOKE", target = "Lgregtech/api/metatileentity/implementations/MTEBasicMachine;createFluidOutputSlot([Lcom/gtnewhorizons/modularui/api/drawable/IDrawable;Lcom/gtnewhorizons/modularui/api/math/Pos2d;)Lcom/gtnewhorizons/modularui/common/widget/FluidSlotWidget;"))
     private FluidSlotWidget unconfined$createOutputFluidSlot(MTEBasicMachine instance, IDrawable[] backgrounds, Pos2d pos, Operation<FluidSlotWidget> original, @Local(argsOnly = true) int index) {
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
-            return unconfined$createFluidSlot(backgrounds, pos, mf.getOutputFluids().getFluidStackTankForSlot(index), true);
+            return unconfined$createFluidSlot(
+                backgrounds,
+                pos,
+                mf.getOutputFluids().getFluidStackTankForSlot(index),
+                true
+            );
         }
         return original.call(instance, backgrounds, pos);
     }

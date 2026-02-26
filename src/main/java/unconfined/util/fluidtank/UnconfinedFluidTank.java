@@ -193,14 +193,16 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
 
     @Override
     public NBTTagCompound saveData() {
-        return Utils.make(new NBTTagCompound(), tag -> {
-            for (int i = 0; i < getSlotCount(); i++) {
-                FluidStack fluidStack = get(i);
-                if (fluidStack != null) {
-                    tag.setTag(String.valueOf(i), fluidStack.writeToNBT(new NBTTagCompound()));
+        return Utils.make(
+            new NBTTagCompound(), tag -> {
+                for (int i = 0; i < getSlotCount(); i++) {
+                    FluidStack fluidStack = get(i);
+                    if (fluidStack != null) {
+                        tag.setTag(String.valueOf(i), fluidStack.writeToNBT(new NBTTagCompound()));
+                    }
                 }
             }
-        });
+        );
     }
 
     // endregion

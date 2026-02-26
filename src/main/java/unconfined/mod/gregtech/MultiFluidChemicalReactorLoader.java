@@ -20,7 +20,8 @@ public class MultiFluidChemicalReactorLoader {
             128 * 1000,
             SoundResource.NONE,
             MTEBasicMachineWithRecipe.SpecialEffects.TOP_SMOKE,
-            "CHEMICAL_REACTOR");
+            "CHEMICAL_REACTOR"
+        );
     }
 
 }

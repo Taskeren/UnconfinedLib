@@ -4,7 +4,7 @@
   "target": "@env(DEFAULT)",
   "package": "unconfined.core.mixins",
   "mixins": [
-    "multifluid.MTEBasicMachineMixin",
-    "multifluid.MTEBasicMachineImplMixin"
+    "multifluid.MTEBasicMachineImplMixin",
+    "multifluid.MTEBasicMachineMixin"
   ]
 }
