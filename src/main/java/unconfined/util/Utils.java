@@ -1,10 +1,15 @@
 package unconfined.util;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 
 /// General non-Minecraft utils
@@ -50,6 +55,24 @@ public final class Utils {
     public static <T> T[] makeArray(int size, IntFunction<T[]> constructor, IntFunction<T> generator) {
         T[] array = constructor.apply(size);
         return makeArray(array, generator);
+    }
+
+    @ApiStatus.Experimental
+    @SuppressWarnings("unchecked")
+    public static <T, R> R[] mapArray(T[] source, Function<T, R> mapper) {
+        if (source.length == 0) throw new IllegalArgumentException("source array must not be empty");
+        Iterator<T> iter = Arrays.asList(source).iterator();
+        // get the return type by get the first element from the mapper
+        R first = mapper.apply(iter.next());
+        // then construct the array
+        R[] ret = (R[]) Array.newInstance(first.getClass(), source.length);
+        // fill the first element
+        ret[0] = first;
+        // iterate through the remainings
+        for (int i = 1; i < source.length; i++) {
+            ret[i] = mapper.apply(iter.next());
+        }
+        return ret;
     }
 
     public static <T> int countNull(@Nullable T[] array) {
