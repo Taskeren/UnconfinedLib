@@ -3,7 +3,6 @@ package unconfined.core.mixins.multifluid;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.metatileentity.implementations.MTEBasicMachine;
 import gregtech.api.metatileentity.implementations.MTEBasicTank;
-import lombok.Getter;
 import net.minecraftforge.fluids.FluidStack;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +24,7 @@ import java.util.Arrays;
 /// TODO: add an option to disable this injection.
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(value = MTEBasicMachine.class, remap = false)
-public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements UnconfinedMultiFluidBasicMachine.Mixin {
+public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements UnconfinedMultiFluidBasicMachine {
 
     public MTEBasicMachineImplMixin(int aID, String aName, String aNameRegional, int aTier, int aInvSlotCount, String aDescription, ITexture... aTextures) {
         super(aID, aName, aNameRegional, aTier, aInvSlotCount, aDescription, aTextures);
@@ -33,12 +32,13 @@ public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements U
     }
 
     @Unique
-    @Getter
     private IUnconfinedFluidTank unconfined$inputFluids;
 
     @Unique
-    @Getter
     private IUnconfinedFluidTank unconfined$outputFluids;
+
+    @Unique
+    private final FluidStack[] unconfined$recipeOutputFluids = new FluidStack[10];
 
     @Inject(method = "<init>(Ljava/lang/String;II[Ljava/lang/String;[[[Lgregtech/api/interfaces/ITexture;II)V", at = @At("TAIL"))
     private void unconfined$init(String aName, int aTier, int aAmperage, String[] aDescription, ITexture[][][] aTextures, int aInputSlotCount, int aOutputSlotCount, CallbackInfo ci) {
@@ -58,21 +58,28 @@ public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements U
             .build();
     }
 
-    @Unique
-    private final FluidStack[] recipeOutputFluids = new FluidStack[10];
-
     @Override
-    public @Nullable FluidStack[] unconfined$getRecipeOutputFluids() {
-        return recipeOutputFluids;
+    public IUnconfinedFluidTank getInputFluids() {
+        return unconfined$inputFluids;
     }
 
     @Override
-    public void unconfined$fillRecipeOutputFluids(@Nullable FluidStack[] fluidStacks) {
-        System.arraycopy(fluidStacks, 0, recipeOutputFluids, 0, fluidStacks.length);
+    public IUnconfinedFluidTank getOutputFluids() {
+        return unconfined$outputFluids;
     }
 
     @Override
-    public void unconfined$clearRecipeOutputFluids() {
-        Arrays.fill(recipeOutputFluids, null);
+    public @Nullable FluidStack[] getRecipeOutputFluids() {
+        return unconfined$recipeOutputFluids;
+    }
+
+    @Override
+    public void fillRecipeOutputFluids(@Nullable FluidStack[] fluidStacks) {
+        System.arraycopy(fluidStacks, 0, unconfined$recipeOutputFluids, 0, fluidStacks.length);
+    }
+
+    @Override
+    public void clearRecipeOutputFluids() {
+        Arrays.fill(unconfined$recipeOutputFluids, null);
     }
 }
