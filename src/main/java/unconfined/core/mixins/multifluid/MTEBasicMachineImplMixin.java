@@ -4,18 +4,16 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.metatileentity.implementations.MTEBasicMachine;
 import gregtech.api.metatileentity.implementations.MTEBasicTank;
 import net.minecraftforge.fluids.FluidStack;
-import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import unconfined.api.gregtech.UnconfinedMultiFluidBasicMachine;
+import unconfined.util.FinalArrayAccessor;
 import unconfined.util.fluidtank.IUnconfinedFluidTank;
 import unconfined.util.fluidtank.UnconfinedFluidSlotView;
 import unconfined.util.fluidtank.UnconfinedFluidTank;
-
-import java.util.Arrays;
 
 /// The implementation of multi-fluid basic machines.
 ///
@@ -39,6 +37,8 @@ public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements U
 
     @Unique
     private final FluidStack[] unconfined$recipeOutputFluids = new FluidStack[10];
+    @Unique
+    private final FinalArrayAccessor<FluidStack> unconfined$recipeOutputFluidsAccessor = () -> unconfined$recipeOutputFluids;
 
     @Inject(method = "<init>(Ljava/lang/String;II[Ljava/lang/String;[[[Lgregtech/api/interfaces/ITexture;II)V", at = @At("TAIL"))
     private void unconfined$init(String aName, int aTier, int aAmperage, String[] aDescription, ITexture[][][] aTextures, int aInputSlotCount, int aOutputSlotCount, CallbackInfo ci) {
@@ -69,17 +69,7 @@ public abstract class MTEBasicMachineImplMixin extends MTEBasicTank implements U
     }
 
     @Override
-    public @Nullable FluidStack[] getRecipeOutputFluids() {
-        return unconfined$recipeOutputFluids;
-    }
-
-    @Override
-    public void fillRecipeOutputFluids(@Nullable FluidStack[] fluidStacks) {
-        System.arraycopy(fluidStacks, 0, unconfined$recipeOutputFluids, 0, fluidStacks.length);
-    }
-
-    @Override
-    public void clearRecipeOutputFluids() {
-        Arrays.fill(unconfined$recipeOutputFluids, null);
+    public FinalArrayAccessor<FluidStack> getRecipeOutputAccessor() {
+        return unconfined$recipeOutputFluidsAccessor;
     }
 }

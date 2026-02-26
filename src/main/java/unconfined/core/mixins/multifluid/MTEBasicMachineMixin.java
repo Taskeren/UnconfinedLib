@@ -23,6 +23,7 @@ import unconfined.api.gregtech.UnconfinedMultiFluidBasicMachine;
 import unconfined.util.UnconfinedUtils;
 import unconfined.util.Utils;
 import unconfined.util.fluidtank.IUnconfinedFluidTank;
+import unconfined.util.fluidtank.internal.InternalUnconfinedFluidTankHelper;
 
 /// The injection to make multi-fluid basic work.
 ///
@@ -53,7 +54,7 @@ public class MTEBasicMachineMixin {
         // check if the output tank can hold all the recipe output
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             IUnconfinedFluidTank output = mf.getOutputFluids();
-            return unconfined.util.fluidtank.utils.Utils.canOutput(output, recipe.mFluidOutputs);
+            return InternalUnconfinedFluidTankHelper.canOutput(output, recipe.mFluidOutputs);
         }
         return original.call(instance, aOutput);
     }
@@ -62,7 +63,7 @@ public class MTEBasicMachineMixin {
     private void unconfined$recipeOutputMultiFluid(MTEBasicMachine instance, FluidStack value, Operation<Void> original, @Local(name = "tRecipe") GTRecipe recipe) {
         // store the recipe output for later usage.
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
-            mf.fillRecipeOutputFluids(UnconfinedUtils.copyArray(recipe.mFluidOutputs));
+            mf.getRecipeOutputAccessor().fill(UnconfinedUtils.copyArray(recipe.mFluidOutputs));
             return;
         }
         original.call(instance, value);
@@ -73,13 +74,13 @@ public class MTEBasicMachineMixin {
         // when the recipe is finished,
         // dump the recipe output to the output tank.
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
-            FluidStack[] recipeOut = mf.getRecipeOutputFluids();
+            FluidStack[] recipeOut = mf.getRecipeOutputAccessor().get();
             for (FluidStack fluid : recipeOut) {
                 if (fluid != null) {
                     mf.getOutputFluids().fill(fluid, true);
                 }
             }
-            mf.clearRecipeOutputFluids();
+            mf.getRecipeOutputAccessor().clear();
         }
         return original.call(instance);
     }
@@ -92,7 +93,7 @@ public class MTEBasicMachineMixin {
             mf.getOutputFluids().loadData(aNBT.getCompoundTag("unconfined$outputFluids"));
             UnconfinedUtils.Persist.loadToArray(
                 aNBT.getCompoundTag("unconfined$recipeOutput"),
-                mf.getRecipeOutputFluids()
+                mf.getRecipeOutputAccessor().get()
             );
         }
     }
@@ -103,7 +104,7 @@ public class MTEBasicMachineMixin {
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             aNBT.setTag("unconfined$inputFluids", mf.getInputFluids().saveData());
             aNBT.setTag("unconfined$outputFluids", mf.getOutputFluids().saveData());
-            aNBT.setTag("unconfined$recipeOutput", UnconfinedUtils.Persist.saveArray(mf.getRecipeOutputFluids()));
+            aNBT.setTag("unconfined$recipeOutput", UnconfinedUtils.Persist.saveArray(mf.getRecipeOutputAccessor().get()));
         }
     }
 

@@ -169,12 +169,12 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
 
     @Override
     public FluidTankInfo[] getTankInfo() {
-        return Utils.makeArray(getSlotCount(), FluidTankInfo[]::new, slot -> new FluidTankInfo(getFluidTank(slot)));
+        return Utils.makeArray(new FluidTankInfo[getSlotCount()], slot -> new FluidTankInfo(getFluidTank(slot)));
     }
 
     @Override
     public @Nullable FluidStack[] toFluidStackArray() {
-        return Utils.makeArray(getSlotCount(), FluidStack[]::new, this::get);
+        return Utils.makeArray(new FluidStack[getSlotCount()], this::get);
     }
 
     @Override

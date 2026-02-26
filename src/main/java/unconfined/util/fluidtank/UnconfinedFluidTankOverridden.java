@@ -1,9 +1,11 @@
 package unconfined.util.fluidtank;
 
+import gregtech.api.metatileentity.implementations.MTEBasicMachine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /// A [IUnconfinedFluidTank] wrapper that can have few slots overridden and delegate the getting and setting operations to other [UnconfinedFluidSlotView]s.
@@ -44,5 +46,15 @@ public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapp
         } else {
             delegate.set(slot, stack);
         }
+    }
+
+    @ApiStatus.Experimental
+    public static void setupInputOverriddenFromBasicMachine(UnconfinedFluidTankOverridden tank, MTEBasicMachine self) {
+        tank.setOverridden(0, UnconfinedFluidSlotView.of(self::getFillableStack, self::setFillableStack));
+    }
+
+    @ApiStatus.Experimental
+    public static void setupOutputOverriddenFromBasicMachine(UnconfinedFluidTankOverridden tank, MTEBasicMachine self) {
+        tank.setOverridden(0, UnconfinedFluidSlotView.of(self::getDrainableStack, self::setDrainableStack));
     }
 }

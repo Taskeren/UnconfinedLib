@@ -9,10 +9,15 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = UnconfinedLibMod.MODID, version = Tags.VERSION, name = "UnconfinedLib", acceptedMinecraftVersions = "[1.7.10]")
+import static unconfined.mod.UnconfinedLibMod.DEPENDENCIES;
+import static unconfined.mod.UnconfinedLibMod.MODID;
+
+@Mod(modid = MODID, version = Tags.VERSION, name = "UnconfinedLib", acceptedMinecraftVersions = "[1.7.10]", dependencies = DEPENDENCIES)
 public class UnconfinedLibMod {
 
     public static final String MODID = "unconfinedlib";
+    public static final String DEPENDENCIES = "required-after:gregtech;";
+
     public static final Logger LOG = LogManager.getLogger(MODID);
 
     @SidedProxy(clientSide = "unconfined.mod.ClientProxy", serverSide = "unconfined.mod.CommonProxy")
