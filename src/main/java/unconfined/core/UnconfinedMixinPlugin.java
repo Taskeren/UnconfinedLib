@@ -16,6 +16,8 @@ public final class UnconfinedMixinPlugin implements IMixinConfigPlugin {
     private final UnconfinedCoreConfig config = UnconfinedCoreConfig.INSTANCE;
 
     @Getter
+    private static boolean multiFluidBasicEnabled;
+    @Getter
     private static boolean multiFluidBasicImplementedByDefault;
 
     @Override
@@ -32,6 +34,9 @@ public final class UnconfinedMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         log.debug("Checking if should apply mixin {} to {}", mixinClassName, targetClassName);
+        if (mixinClassName.equals(UNC_MIXIN_PKG_PREFIX + "multifluid.MTEBasicMachineMixin")) {
+            return multiFluidBasicEnabled = config.isMultiFluidEnabled();
+        }
         if (mixinClassName.equals(UNC_MIXIN_PKG_PREFIX + "multifluid.MTEBasicMachineImplMixin")) {
             return multiFluidBasicImplementedByDefault = config.isMultiFluidBasicImplementedByDefault();
         }

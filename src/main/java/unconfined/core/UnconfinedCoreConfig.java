@@ -30,6 +30,15 @@ public final class UnconfinedCoreConfig implements ConfigClassHandler.ConfigBear
 
     private static final String CAT_MULTI_FLUID_BASIC = "multi-fluid-basic";
 
+    public boolean isMultiFluidEnabled() {
+        return config.getBoolean(
+            "enable",
+            CAT_MULTI_FLUID_BASIC,
+            true,
+            "true to enable multi-fluid basic machine basic injection"
+        );
+    }
+
     @ConfigClassHandler.ConfigValue
     public boolean isMultiFluidBasicImplementedByDefault() {
         return config.getBoolean(
