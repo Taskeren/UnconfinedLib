@@ -8,6 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import org.jspecify.annotations.Nullable;
 import unconfined.util.UnconfinedUtils;
 
 import java.util.HashMap;
@@ -46,7 +47,14 @@ public abstract class TreeCommand extends CommandBase implements ITreeCommand {
     }
 
     @Override
-    public final List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return getListOfStringsFromIterableMatchingLastWord(args, getSubCommands().keySet());
+    public final @Nullable List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
+        if (args.length <= 1) {
+            return getListOfStringsFromIterableMatchingLastWord(args, getSubCommands().keySet());
+        }
+        ICommand subCommand = getSubCommand(args[0]);
+        if (subCommand != null) {
+            return subCommand.addTabCompletionOptions(sender, shiftArgs(args));
+        }
+        return null;
     }
 }

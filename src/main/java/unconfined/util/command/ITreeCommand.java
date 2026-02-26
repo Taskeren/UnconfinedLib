@@ -3,14 +3,12 @@ package unconfined.util.command;
 import net.minecraft.command.CommandNotFoundException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import org.jspecify.annotations.Nullable;
 import unconfined.util.Assertions;
 import unconfined.util.Utils;
+import unconfined.util.chat.ChatBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,12 +76,15 @@ public interface ITreeCommand extends ICommand {
                     }
 
                     // or handle a normal command
-                    list.add(new ChatComponentText(path + subCommandName)
-                        .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.AQUA))
-                        .appendSibling(new ChatComponentText(" : ")
-                            .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY).setBold(true)))
-                        .appendSibling(new ChatComponentTranslation(subCommand.getCommandUsage(sender))
-                            .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY))));
+                    list.add(
+                        ChatBuilder.text(path + subCommandName)
+                            .color(EnumChatFormatting.GREEN)
+                            .appendText(": ")
+                            .append(
+                                ChatBuilder.translation(subCommand.getCommandUsage(sender))
+                                    .color(EnumChatFormatting.GRAY)
+                            )
+                    );
                 }
             }
         );
