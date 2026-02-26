@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Log4j2
-public class UnconfinedMixinPlugin implements IMixinConfigPlugin {
+public final class UnconfinedMixinPlugin implements IMixinConfigPlugin {
     private static final String UNC_MIXIN_PKG_PREFIX = "unconfined.core.mixins.";
     private final UnconfinedCoreConfig config = UnconfinedCoreConfig.INSTANCE;
 

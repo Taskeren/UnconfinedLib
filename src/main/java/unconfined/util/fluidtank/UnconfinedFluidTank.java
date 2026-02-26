@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import org.jspecify.annotations.Nullable;
+import unconfined.util.Assertions;
 import unconfined.util.UnconfinedUtils;
 import unconfined.util.Utils;
 
@@ -221,10 +222,9 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
         private boolean integrated;
 
         public IUnconfinedFluidTank build() {
-            IUnconfinedFluidTank result;
-            if (slotCount < 0) throw new IllegalStateException("slotCount should be non-negative");
-            if (capacity < 0) throw new IllegalStateException("capacity should be non-negative");
-            result = new UnconfinedFluidTank(slotCount, capacity);
+            Assertions.check(slotCount >= 0, "slotCount should be non-negative");
+            Assertions.check(capacity >= 0, "capacity should be non-negative");
+            IUnconfinedFluidTank result = new UnconfinedFluidTank(slotCount, capacity);
             if (overridden) {
                 result = new UnconfinedFluidTankOverridden(result);
                 if (overriddenConfigurer != null) {

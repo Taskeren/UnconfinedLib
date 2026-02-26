@@ -18,6 +18,7 @@ public interface FinalArrayAccessor<T> extends Supplier<T[]> {
         System.arraycopy(source, 0, get(), 0, copyLength);
     }
 
+    /// Fill the underlying array with `null`s.
     default void clear() {
         Arrays.fill(get(), null);
     }

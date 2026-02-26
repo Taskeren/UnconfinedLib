@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
+/// General non-Minecraft utils
 @SuppressWarnings("unused")
 public final class Utils {
 

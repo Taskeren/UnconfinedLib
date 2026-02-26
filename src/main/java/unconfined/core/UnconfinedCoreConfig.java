@@ -8,7 +8,7 @@ import unconfined.util.config.ConfigClassHandler;
 
 import java.io.File;
 
-public class UnconfinedCoreConfig implements ConfigClassHandler.ConfigBearer {
+public final class UnconfinedCoreConfig implements ConfigClassHandler.ConfigBearer {
 
     private static final String UNCONFINED_CORE_CONFIG_PATH = "config/unconfined.core.cfg";
     public static final UnconfinedCoreConfig INSTANCE = new UnconfinedCoreConfig();

@@ -5,6 +5,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import unconfined.api.UnconfinedAPI;
+import unconfined.mod.command.UnconfinedCommand;
 import unconfined.mod.gregtech.MultiFluidChemicalReactorLoader;
 
 public class CommonProxy {
@@ -26,5 +27,6 @@ public class CommonProxy {
     }
 
     public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new UnconfinedCommand());
     }
 }

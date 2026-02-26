@@ -1,4 +1,4 @@
 package unconfined;
 
-public class Unconfined {
+public final class Unconfined {
 }

@@ -1,10 +1,13 @@
 package unconfined.util;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fluids.FluidStack;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+/// Minecraft-related utils
 public final class UnconfinedUtils {
 
     public static FluidStack copy(FluidStack stack, int amount) {
@@ -25,6 +28,12 @@ public final class UnconfinedUtils {
                 }
             }
         );
+    }
+
+    public static void addAllChatMessages(ICommandSender sender, Iterable<IChatComponent> components) {
+        for (IChatComponent component : components) {
+            sender.addChatMessage(component);
+        }
     }
 
     public static final class Persist {
