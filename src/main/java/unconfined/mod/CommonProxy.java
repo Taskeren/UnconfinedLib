@@ -18,7 +18,7 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent event) {
-        if (UnconfinedAPI.isDevelopment()) {
+        if (UnconfinedAPI.isDebugMode()) {
             MultiFluidChemicalReactorLoader.init();
         }
     }
