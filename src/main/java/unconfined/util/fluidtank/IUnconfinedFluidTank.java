@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
+import unconfined.util.Utils;
 
 import java.util.Iterator;
 
@@ -79,7 +80,10 @@ public interface IUnconfinedFluidTank extends Iterable<@Nullable FluidStack> {
     FluidTankInfo[] getTankInfo();
 
     /// @return the contained fluids and empty slots.
-    @Nullable FluidStack[] toFluidStackArray();
+    @Nullable
+    default FluidStack[] toFluidStackArray() {
+        return Utils.makeArray(new FluidStack[getSlotCount()], this::get);
+    }
 
     @Override
     default Iterator<@Nullable FluidStack> iterator() {
@@ -97,7 +101,9 @@ public interface IUnconfinedFluidTank extends Iterable<@Nullable FluidStack> {
     NBTTagCompound saveData();
 
     /// @return the fluid slot view of the given slot.
-    UnconfinedFluidSlotView getFluidSlotView(int slot);
+    default UnconfinedFluidSlotView getFluidSlotView(int slot) {
+        return UnconfinedFluidSlotView.of(() -> get(slot), (value) -> set(slot, value));
+    }
 
     /// @return the fluid stack tank of the given slot.
     default FluidStackTank getFluidStackTankForSlot(int slot) {

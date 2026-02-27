@@ -32,13 +32,14 @@
 
 ## “流体储罐”包设计
 
-`unconfined.util.fluidtank` 存放了为多流体设计的储罐实现，所有储罐类都实现了 `IUnconfinedFluidTank`，额外功能使用委托设计代理给底层的实现。
+`unconfined.util.fluidtank` 存放了为多流体设计的储罐实现，所有储罐类都实现了 `IUnconfinedFluidTank`
+，大部分额外功能使用委托设计代理给底层的实现。
 
 - `UnconfinedFluidTank` 是最基础的实现。
-- `UnconfinedFluidTankOverridden` 提供了把流体格代理给外部字段的功能，用于把机器自带的 `fillableStack` 和 `drainableStack` 接入流体储罐管理。
+- `UnconfinedFluidTankOverridden` 提供了把流体格代理给外部字段的功能，用于把机器自带的 `fillableStack` 和
+  `drainableStack` 接入流体储罐管理。
+- `UnconfinedFluidTankNoOverflow` 禁止同种流体占用 1 个以上的格子
 - `UnconfinedFluidTankCached` 把一些热点代码需要的实例缓存起来。
 - `UnconfinedFluidTankIntegrated` 实现了 `IFluidHandler` 和 `IFluidTank`，不过目前没用。
 
 创建 `IUnconfinedFluidTank` 可以使用 `UnconfinedFluidTank.builder()`。
-
-这些流体储罐全都遵循 GT 的设计，在自动化的情况下，每种液体只占 1 个格子；多余的液体会被拒绝，而不是放到其他空格子上。

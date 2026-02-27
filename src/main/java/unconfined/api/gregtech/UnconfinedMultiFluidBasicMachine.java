@@ -2,8 +2,8 @@ package unconfined.api.gregtech;
 
 import gregtech.api.metatileentity.implementations.MTEBasicMachine;
 import net.minecraftforge.fluids.FluidStack;
-import unconfined.util.FinalArrayAccessor;
 import unconfined.core.mixins.multifluid.MTEBasicMachineMixin;
+import unconfined.util.FinalArrayAccessor;
 import unconfined.util.fluidtank.IUnconfinedFluidTank;
 import unconfined.util.fluidtank.UnconfinedFluidTankOverridden;
 

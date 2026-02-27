@@ -18,6 +18,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import unconfined.util.UnconfinedUtils;
 import unconfined.util.chat.ChatBuilder;
 import unconfined.util.command.TreeCommand;
 
@@ -133,6 +134,7 @@ public class UnconfinedCommand extends TreeCommand {
                     sender.addChatMessage(
                         ChatBuilder.text("MTE: ").append(getClassInfoChatComponent(mte.getClass()))
                     );
+                    UnconfinedUtils.addAllChatMessages(sender, BlockInspectUtils.getMTEFluidInfo(mte));
                 }
             }
         }

@@ -1,9 +1,6 @@
 package unconfined.util.fluidtank;
 
 import gregtech.api.metatileentity.implementations.MTEBasicMachine;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -11,18 +8,13 @@ import org.jspecify.annotations.Nullable;
 /// A [IUnconfinedFluidTank] wrapper that can have few slots overridden and delegate the getting and setting operations to other [UnconfinedFluidSlotView]s.
 ///
 /// To set up the overridden, call [#setOverridden(int, UnconfinedFluidSlotView)].
-@RequiredArgsConstructor
-public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapper {
-
-    @Delegate
-    @Getter
-    protected final IUnconfinedFluidTank delegate;
+public class UnconfinedFluidTankOverridden extends UnconfinedFluidTank {
 
     protected final @Nullable UnconfinedFluidSlotView[] overridden;
 
-    public UnconfinedFluidTankOverridden(IUnconfinedFluidTank delegate) {
-        this.delegate = delegate;
-        this.overridden = new UnconfinedFluidSlotView[delegate.getSlotCount()];
+    public UnconfinedFluidTankOverridden(int slotCount, int capacity) {
+        super(slotCount, capacity);
+        this.overridden = new UnconfinedFluidSlotView[slotCount];
     }
 
     /// Set the slot overridden, or cancel the overridden by passing a `null`.
@@ -35,7 +27,7 @@ public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapp
     @Override
     public @Nullable FluidStack get(int slot) {
         UnconfinedFluidSlotView view = overridden[slot];
-        return view != null ? view.get() : delegate.get(slot);
+        return view != null ? view.get() : super.get(slot);
     }
 
     @Override
@@ -44,7 +36,7 @@ public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapp
         if (view != null) {
             view.accept(stack);
         } else {
-            delegate.set(slot, stack);
+            super.set(slot, stack);
         }
     }
 
@@ -57,4 +49,5 @@ public class UnconfinedFluidTankOverridden implements IUnconfinedFluidTank.Wrapp
     public static void setupOutputOverriddenFromBasicMachine(UnconfinedFluidTankOverridden tank, MTEBasicMachine self) {
         tank.setOverridden(0, UnconfinedFluidSlotView.of(self::getDrainableStack, self::setDrainableStack));
     }
+
 }

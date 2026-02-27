@@ -13,6 +13,7 @@ import unconfined.util.UnconfinedUtils;
 import unconfined.util.Utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -176,16 +177,6 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
     }
 
     @Override
-    public @Nullable FluidStack[] toFluidStackArray() {
-        return Utils.makeArray(new FluidStack[getSlotCount()], this::get);
-    }
-
-    @Override
-    public UnconfinedFluidSlotView getFluidSlotView(int slot) {
-        return UnconfinedFluidSlotView.of(() -> get(slot), (value) -> set(slot, value));
-    }
-
-    @Override
     public void loadData(NBTTagCompound tag) {
         for (int i = 0; i < getSlotCount(); i++) {
             if (tag.hasKey(String.valueOf(i))) {
@@ -286,6 +277,21 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
         return empty;
     }
 
+    public static String toString(Iterable<@Nullable FluidStack> iterable) {
+        StringBuilder s = new StringBuilder("UnconfinedFluidTank{");
+        for (Iterator<@Nullable FluidStack> iter = iterable.iterator(); iter.hasNext(); ) {
+            FluidStack fluid = iter.next();
+            s.append(fluid == null ? "null" : fluid.amount + "x " + fluid.getLocalizedName());
+            if (iter.hasNext()) s.append(", ");
+        }
+        return s.append("}").toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString(this);
+    }
+
     // endregion
 
     @Getter
@@ -300,16 +306,19 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
 
         private boolean cached;
         private boolean integrated;
+        private boolean noOverflow;
 
         public IUnconfinedFluidTank build() {
             Assertions.check(slotCount >= 0, "slotCount should be non-negative");
             Assertions.check(capacity >= 0, "capacity should be non-negative");
-            IUnconfinedFluidTank result = new UnconfinedFluidTank(slotCount, capacity);
-            if (overridden) {
-                result = new UnconfinedFluidTankOverridden(result);
-                if (overriddenConfigurer != null) {
-                    overriddenConfigurer.accept((UnconfinedFluidTankOverridden) result);
-                }
+            IUnconfinedFluidTank result = overridden
+                ? new UnconfinedFluidTankOverridden(slotCount, capacity)
+                : new UnconfinedFluidTank(slotCount, capacity);
+            if (overridden && overriddenConfigurer != null) {
+                overriddenConfigurer.accept((UnconfinedFluidTankOverridden) result);
+            }
+            if (noOverflow) {
+                result = new UnconfinedFluidTankNoOverflow(result);
             }
             if (cached) {
                 result = new UnconfinedFluidTankCached(result);
