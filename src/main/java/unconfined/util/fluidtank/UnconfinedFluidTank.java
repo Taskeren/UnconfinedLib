@@ -12,6 +12,8 @@ import unconfined.util.Assertions;
 import unconfined.util.UnconfinedUtils;
 import unconfined.util.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /// A default implementation of [IUnconfinedFluidTank].
@@ -204,6 +206,84 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
                 }
             }
         );
+    }
+
+    @Override
+    public FluidStack[] fillAll(@Nullable FluidStack[] fluidStacks) {
+        List<FluidStack> failures = new ArrayList<>(fluidStacks.length);
+        int capacity = getCapacity();
+        output:
+        for (FluidStack output : fluidStacks) {
+            if (output == null) continue;
+            // fill the slots with same fluids first.
+            for (int i = 0; i < getSlotCount(); i++) {
+                FluidStack slot = get(i);
+                if (slot != null) {
+                    if (capacity - slot.amount >= output.amount) {
+                        slot.amount += output.amount;
+                    } else {
+                        // not enough space
+                        failures.add(output);
+                    }
+                    continue output;
+                }
+            }
+            // fill an empty slot then.
+            for (int i = 0; i < getSlotCount(); i++) {
+                if (get(i) == null) {
+                    if (capacity >= output.amount) {
+                        set(i, output);
+                    } else {
+                        // not enough space
+                        failures.add(output);
+                    }
+                    continue output;
+                }
+            }
+            // both failed ?!
+            // reaches here when there's no either empty slots or slots with same fluids.
+            failures.add(output);
+        }
+
+        return failures.toArray(new FluidStack[0]);
+    }
+
+    @Override
+    public boolean canFillAll(@Nullable FluidStack[] fluidStacks) {
+        int capacity = getCapacity();
+        // the fluid count of output that can't find a slot with the same fluid.
+        int unmerged = 0;
+        output:
+        for (FluidStack output : fluidStacks) {
+            if (output == null) continue;
+            // check if the amount is too huge
+            if (output.amount > getCapacity()) return false;
+            // fill the slots with same fluids.
+            for (int i = 0; i < getSlotCount(); i++) {
+                FluidStack slot = get(i);
+                if (slot != null && FluidStack.areFluidStackTagsEqual(slot, output)) {
+                    if (capacity - slot.amount >= output.amount) {
+                        continue output;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            // this fluid can't find a slot with the same fluid.
+            unmerged++;
+        }
+        // check if there's enough empty slots for unmerged fluids.
+        return countNull() >= unmerged;
+    }
+
+    protected int countNull() {
+        int empty = 0;
+        for (int i = 0; i < getSlotCount(); i++) {
+            if (get(i) == null) {
+                empty++;
+            }
+        }
+        return empty;
     }
 
     // endregion

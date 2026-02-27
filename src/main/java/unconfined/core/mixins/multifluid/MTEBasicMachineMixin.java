@@ -19,11 +19,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import unconfined.Unconfined;
 import unconfined.api.gregtech.UnconfinedMultiFluidBasicMachine;
 import unconfined.util.UnconfinedUtils;
 import unconfined.util.Utils;
-import unconfined.util.fluidtank.IUnconfinedFluidTank;
-import unconfined.util.fluidtank.internal.InternalUnconfinedFluidTankHelper;
 
 /// The injection to make multi-fluid basic work.
 ///
@@ -53,8 +52,7 @@ public class MTEBasicMachineMixin {
     private boolean unconfined$canOutputMultiFluid(MTEBasicMachine instance, FluidStack aOutput, Operation<Boolean> original, @Local(argsOnly = true) GTRecipe recipe) {
         // check if the output tank can hold all the recipe output
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
-            IUnconfinedFluidTank output = mf.getOutputFluids();
-            return InternalUnconfinedFluidTankHelper.canOutput(output, recipe.mFluidOutputs);
+            return mf.getOutputFluids().canFillAll(recipe.mFluidOutputs);
         }
         return original.call(instance, aOutput);
     }
@@ -75,10 +73,12 @@ public class MTEBasicMachineMixin {
         // dump the recipe output to the output tank.
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             FluidStack[] recipeOut = mf.getRecipeOutputAccessor().get();
-            for (FluidStack fluid : recipeOut) {
-                if (fluid != null) {
-                    mf.getOutputFluids().fill(fluid, true);
-                }
+            FluidStack[] leftover = mf.getOutputFluids().fillAll(recipeOut);
+            if (leftover.length > 0) {
+                Unconfined.log.warn(
+                    "Probably voided {} fluids when failed to dump them to the machine.",
+                    UnconfinedUtils.toString(leftover)
+                );
             }
             mf.getRecipeOutputAccessor().clear();
         }
@@ -104,7 +104,10 @@ public class MTEBasicMachineMixin {
         if (this instanceof UnconfinedMultiFluidBasicMachine mf) {
             aNBT.setTag("unconfined$inputFluids", mf.getInputFluids().saveData());
             aNBT.setTag("unconfined$outputFluids", mf.getOutputFluids().saveData());
-            aNBT.setTag("unconfined$recipeOutput", UnconfinedUtils.Persist.saveArray(mf.getRecipeOutputAccessor().get()));
+            aNBT.setTag(
+                "unconfined$recipeOutput",
+                UnconfinedUtils.Persist.saveArray(mf.getRecipeOutputAccessor().get())
+            );
         }
     }
 

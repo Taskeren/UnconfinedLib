@@ -1,5 +1,9 @@
 package unconfined.util;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterators;
+import lombok.Getter;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IChatComponent;
@@ -7,8 +11,12 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.Function;
+
 /// Minecraft-related utils
 public final class UnconfinedUtils {
+    @Getter
+    private static final Joiner COMMA_JOINER = Joiner.on(", ");
 
     public static FluidStack copy(FluidStack stack, int amount) {
         FluidStack copy = stack.copy();
@@ -34,6 +42,26 @@ public final class UnconfinedUtils {
         for (IChatComponent component : components) {
             sender.addChatMessage(component);
         }
+    }
+
+    public static String toString(FluidStack stack) {
+        return McUtils.runDist(
+            () -> String.format("%sx %s", stack.amount, stack.getFluid().getName()),
+            () -> String.format(
+                "%sx %s (%s)",
+                stack.amount,
+                stack.getFluid().getName(),
+                I18n.format(stack.getUnlocalizedName())
+            )
+        );
+    }
+
+    public static String toString(FluidStack[] fluidStacks) {
+        return toString(fluidStacks, UnconfinedUtils::toString);
+    }
+
+    public static <T> String toString(T[] src, Function<T, String> toString) {
+        return "[" + COMMA_JOINER.join(Iterators.transform(Iterators.forArray(src), toString::apply)) + "]";
     }
 
     public static final class Persist {

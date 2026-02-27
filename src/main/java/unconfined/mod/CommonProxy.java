@@ -8,6 +8,8 @@ import unconfined.api.UnconfinedAPI;
 import unconfined.mod.command.UnconfinedCommand;
 import unconfined.mod.gregtech.MultiFluidChemicalReactorLoader;
 
+import java.util.function.Supplier;
+
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
@@ -28,5 +30,9 @@ public class CommonProxy {
 
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new UnconfinedCommand());
+    }
+
+    public <T> T runSided(Supplier<T> serverSide, Supplier<T> clientSide) {
+        return serverSide.get();
     }
 }

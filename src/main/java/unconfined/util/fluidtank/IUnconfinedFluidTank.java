@@ -104,6 +104,13 @@ public interface IUnconfinedFluidTank extends Iterable<@Nullable FluidStack> {
         return getFluidSlotView(slot).asFluidStackTank(getCapacity());
     }
 
+    /// Fill the tank with the given fluid stacks.
+    ///
+    /// @return fluids that can't be dumped to the tank.
+    FluidStack[] fillAll(@Nullable FluidStack[] fluidStacks);
+
+    boolean canFillAll(@Nullable FluidStack[] fluidStacks);
+
     /// Get the actual implementation of [IUnconfinedFluidTank] instead of wrappers.
     ///
     /// **WARNING:** The result will lose its extra functionalities like overridden slots. Accessing the data from it is meaningless, and error-prone!
