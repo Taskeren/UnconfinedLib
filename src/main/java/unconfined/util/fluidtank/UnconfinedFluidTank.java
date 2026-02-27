@@ -78,7 +78,7 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
     protected int fillFluidMerging(FluidStack resource, boolean execute) {
         for (FluidStack slotFluid : this) {
             if (slotFluid == null) continue;
-            if (FluidStack.areFluidStackTagsEqual(slotFluid, resource)) {
+            if (slotFluid.isFluidEqual(resource)) {
                 int amountToFill = Math.min(getCapacity() - slotFluid.amount, resource.amount);
                 if (execute) {
                     resource.amount -= amountToFill;
@@ -138,7 +138,7 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
         for (int slot = 0; slot < getSlotCount(); slot++) {
             FluidStack slotFluid = get(slot);
             if (slotFluid == null) continue;
-            if (FluidStack.areFluidStackTagsEqual(slotFluid, resource)) {
+            if (slotFluid.isFluidEqual(resource)) {
                 int amountToDrain = Math.min(slotFluid.amount, amount);
                 if (execute) {
                     slotFluid.amount -= amountToDrain;
@@ -218,7 +218,7 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
             // fill the slots with same fluids first.
             for (int i = 0; i < getSlotCount(); i++) {
                 FluidStack slot = get(i);
-                if (slot != null) {
+                if (slot != null && slot.isFluidEqual(output)) {
                     if (capacity - slot.amount >= output.amount) {
                         slot.amount += output.amount;
                     } else {
@@ -261,7 +261,7 @@ public class UnconfinedFluidTank implements IUnconfinedFluidTank {
             // fill the slots with same fluids.
             for (int i = 0; i < getSlotCount(); i++) {
                 FluidStack slot = get(i);
-                if (slot != null && FluidStack.areFluidStackTagsEqual(slot, output)) {
+                if (slot != null && slot.isFluidEqual(output)) {
                     if (capacity - slot.amount >= output.amount) {
                         continue output;
                     } else {
