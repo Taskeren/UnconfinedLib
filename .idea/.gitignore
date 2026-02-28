@@ -1,0 +1,20 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Ignored default folder with query files
+/queries/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Other files that I don't want
+# Only code style settings are now wanted.
+compiler.xml
+gradle.xml
+jarRepositories.xml
+misc.xml
+modules.xml
+inspectionProfiles
+vcs.xml

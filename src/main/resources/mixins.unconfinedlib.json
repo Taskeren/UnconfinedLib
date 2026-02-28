@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "refmap": "mixins.unconfinedlib.refmap.json",
+  "target": "@env(DEFAULT)",
+  "plugin": "unconfined.core.UnconfinedMixinPlugin",
+  "package": "unconfined.core.mixins",
+  "mixins": [
+    "misc.MTEBasicMachineWithRecipeAccessor",
+    "misc.RecipeMapBuilderMixin",
+    "multifluid.MTEBasicMachineImplMixin",
+    "multifluid.MTEBasicMachineMixin",
+    "treecommand.CommandHelpMixin"
+  ]
+}

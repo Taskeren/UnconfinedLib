@@ -1,0 +1,342 @@
+package unconfined.util.fluidtank;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import org.jspecify.annotations.Nullable;
+import unconfined.util.Assertions;
+import unconfined.util.UnconfinedUtils;
+import unconfined.util.Utils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+
+/// A default implementation of [IUnconfinedFluidTank].
+///
+/// To create a instance with more than basic features, use [#builder()].
+@Getter
+public class UnconfinedFluidTank implements IUnconfinedFluidTank {
+
+    protected final @Nullable FluidStack[] internalFluids;
+    protected final int capacity;
+
+    public UnconfinedFluidTank(int slotCount, int capacity) {
+        this.internalFluids = new FluidStack[slotCount];
+        this.capacity = capacity;
+    }
+
+    // region direct access
+
+    @Override
+    public @Nullable FluidStack get(int slot) {
+        FluidStack fluid = internalFluids[slot];
+        // clean-up
+        if (fluid != null && fluid.amount <= 0) {
+            set(slot, null);
+            return null;
+        }
+        return fluid;
+    }
+
+    @Override
+    public void set(int slot, @Nullable FluidStack stack) {
+        // clean-up
+        if (stack != null && stack.amount <= 0) {
+            internalFluids[slot] = null;
+            return;
+        }
+        internalFluids[slot] = stack;
+    }
+
+    @Override
+    public int getSlotCount() {
+        return internalFluids.length;
+    }
+
+    // endregion
+
+    // region fill
+
+    public int fill(FluidStack resource, boolean execute) {
+        int result = fillFluidMerging(resource, execute);
+        if (result == 0) result = fillFluidToEmpty(resource, execute);
+        return result;
+    }
+
+    /**
+     * Fill the internal tank with the given fluid, to the first slot with the same fluid.
+     *
+     * @param resource the fluid to be filled to the tank
+     * @param execute  {@code true} to apply the change
+     * @return the amount of fluid that has been filled
+     */
+    protected int fillFluidMerging(FluidStack resource, boolean execute) {
+        for (FluidStack slotFluid : this) {
+            if (slotFluid == null) continue;
+            if (slotFluid.isFluidEqual(resource)) {
+                int amountToFill = Math.min(getCapacity() - slotFluid.amount, resource.amount);
+                if (execute) {
+                    resource.amount -= amountToFill;
+                    slotFluid.amount += amountToFill;
+                }
+                return amountToFill;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Fill the internal tank with the given fluid, to the first empty slot.
+     *
+     * @param resource the fluid to be filled to the tank
+     * @param execute  {@code true} to apply the change
+     * @return the amount of fluid that has been filled
+     */
+    protected int fillFluidToEmpty(FluidStack resource, boolean execute) {
+        for (int slot = 0; slot < getSlotCount(); slot++) {
+            FluidStack slotFluid = get(slot);
+            if (slotFluid == null) {
+                int amountToFill = Math.min(getCapacity(), resource.amount);
+                if (execute) {
+                    resource.amount -= amountToFill;
+                    set(slot, UnconfinedUtils.copy(resource, amountToFill));
+                }
+                return amountToFill;
+            }
+        }
+        return 0;
+    }
+
+    // endregion
+
+    // region drain
+
+    @Nullable
+    public FluidStack drainAny(int amount, boolean execute) {
+        for (int slot = 0; slot < getSlotCount(); slot++) {
+            FluidStack slotFluid = get(slot);
+            if (slotFluid != null) {
+                int amountToDrain = Math.min(slotFluid.amount, amount);
+                if (execute) {
+                    slotFluid.amount -= amountToDrain;
+                    // clean-up
+                    if (slotFluid.amount <= 0) set(slot, null);
+                }
+                return UnconfinedUtils.copy(slotFluid, amountToDrain);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public FluidStack drain(FluidStack resource, int amount, boolean execute) {
+        for (int slot = 0; slot < getSlotCount(); slot++) {
+            FluidStack slotFluid = get(slot);
+            if (slotFluid == null) continue;
+            if (slotFluid.isFluidEqual(resource)) {
+                int amountToDrain = Math.min(slotFluid.amount, amount);
+                if (execute) {
+                    slotFluid.amount -= amountToDrain;
+                    // clean-up
+                    if (slotFluid.amount <= 0) set(slot, null);
+                }
+                return UnconfinedUtils.copy(slotFluid, amountToDrain);
+            }
+        }
+        return null;
+    }
+
+    // endregion
+
+    // region utils
+
+    @Nullable
+    public FluidStack getFirstNonEmpty() {
+        for (FluidStack slotFluid : getInternalFluids()) {
+            if (slotFluid != null) {
+                return slotFluid;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public FluidTank getFluidTank(int slot) {
+        return new FluidTank(get(slot), getCapacity());
+    }
+
+    @Override
+    public FluidTankInfo[] getTankInfo() {
+        return Utils.makeArray(new FluidTankInfo[getSlotCount()], slot -> new FluidTankInfo(getFluidTank(slot)));
+    }
+
+    @Override
+    public void loadData(NBTTagCompound tag) {
+        for (int i = 0; i < getSlotCount(); i++) {
+            if (tag.hasKey(String.valueOf(i))) {
+                set(i, FluidStack.loadFluidStackFromNBT(tag.getCompoundTag(String.valueOf(i))));
+            }
+        }
+    }
+
+    @Override
+    public NBTTagCompound saveData() {
+        return Utils.make(
+            new NBTTagCompound(), tag -> {
+                for (int i = 0; i < getSlotCount(); i++) {
+                    FluidStack fluidStack = get(i);
+                    if (fluidStack != null) {
+                        tag.setTag(String.valueOf(i), fluidStack.writeToNBT(new NBTTagCompound()));
+                    }
+                }
+            }
+        );
+    }
+
+    @Override
+    public FluidStack[] fillAll(@Nullable FluidStack[] fluidStacks) {
+        List<FluidStack> failures = new ArrayList<>(fluidStacks.length);
+        int capacity = getCapacity();
+        output:
+        for (FluidStack output : fluidStacks) {
+            if (output == null) continue;
+            // fill the slots with same fluids first.
+            for (int i = 0; i < getSlotCount(); i++) {
+                FluidStack slot = get(i);
+                if (slot != null && slot.isFluidEqual(output)) {
+                    if (capacity - slot.amount >= output.amount) {
+                        slot.amount += output.amount;
+                    } else {
+                        // not enough space
+                        failures.add(output);
+                    }
+                    continue output;
+                }
+            }
+            // fill an empty slot then.
+            for (int i = 0; i < getSlotCount(); i++) {
+                if (get(i) == null) {
+                    if (capacity >= output.amount) {
+                        set(i, output);
+                    } else {
+                        // not enough space
+                        failures.add(output);
+                    }
+                    continue output;
+                }
+            }
+            // both failed ?!
+            // reaches here when there's no either empty slots or slots with same fluids.
+            failures.add(output);
+        }
+
+        return failures.toArray(new FluidStack[0]);
+    }
+
+    @Override
+    public boolean canFillAll(@Nullable FluidStack[] fluidStacks) {
+        int capacity = getCapacity();
+        // the fluid count of output that can't find a slot with the same fluid.
+        int unmerged = 0;
+        output:
+        for (FluidStack output : fluidStacks) {
+            if (output == null) continue;
+            // check if the amount is too huge
+            if (output.amount > getCapacity()) return false;
+            // fill the slots with same fluids.
+            for (int i = 0; i < getSlotCount(); i++) {
+                FluidStack slot = get(i);
+                if (slot != null && slot.isFluidEqual(output)) {
+                    if (capacity - slot.amount >= output.amount) {
+                        continue output;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            // this fluid can't find a slot with the same fluid.
+            unmerged++;
+        }
+        // check if there's enough empty slots for unmerged fluids.
+        return countNull() >= unmerged;
+    }
+
+    protected int countNull() {
+        int empty = 0;
+        for (int i = 0; i < getSlotCount(); i++) {
+            if (get(i) == null) {
+                empty++;
+            }
+        }
+        return empty;
+    }
+
+    public static String toString(Iterable<@Nullable FluidStack> iterable) {
+        StringBuilder s = new StringBuilder("UnconfinedFluidTank{");
+        for (Iterator<@Nullable FluidStack> iter = iterable.iterator(); iter.hasNext(); ) {
+            FluidStack fluid = iter.next();
+            s.append(fluid == null ? "null" : fluid.amount + "x " + fluid.getLocalizedName());
+            if (iter.hasNext()) s.append(", ");
+        }
+        return s.append("}").toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString(this);
+    }
+
+    // endregion
+
+    @Getter
+    @Setter
+    @Accessors(fluent = true)
+    public static class Builder {
+        private int slotCount;
+        private int capacity;
+
+        private boolean overridden;
+        private @Nullable Consumer<UnconfinedFluidTankOverridden> overriddenConfigurer;
+
+        private boolean cached;
+        private boolean integrated;
+        private boolean noOverflow;
+
+        public IUnconfinedFluidTank build() {
+            Assertions.check(slotCount >= 0, "slotCount should be non-negative");
+            Assertions.check(capacity >= 0, "capacity should be non-negative");
+            IUnconfinedFluidTank result = overridden
+                ? new UnconfinedFluidTankOverridden(slotCount, capacity)
+                : new UnconfinedFluidTank(slotCount, capacity);
+            if (overridden && overriddenConfigurer != null) {
+                overriddenConfigurer.accept((UnconfinedFluidTankOverridden) result);
+            }
+            if (noOverflow) {
+                result = new UnconfinedFluidTankNoOverflow(result);
+            }
+            if (cached) {
+                result = new UnconfinedFluidTankCached(result);
+            }
+            if (integrated) { // must be the last to wrap, so that the integration interfaces are accessible without unwrapping.
+                result = new UnconfinedFluidTankIntegrated(result);
+            }
+            return result;
+        }
+
+        public Builder overridden(Consumer<UnconfinedFluidTankOverridden> configurer) {
+            overridden = true;
+            overriddenConfigurer = configurer;
+            return this;
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+}
