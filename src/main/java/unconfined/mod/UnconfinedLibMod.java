@@ -1,6 +1,8 @@
 package unconfined.mod;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -8,6 +10,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import unconfined.Unconfined;
 
 import static unconfined.mod.UnconfinedLibMod.DEPENDENCIES;
 import static unconfined.mod.UnconfinedLibMod.MODID;
@@ -22,6 +25,15 @@ public class UnconfinedLibMod {
 
     @SidedProxy(clientSide = "unconfined.mod.ClientProxy", serverSide = "unconfined.mod.CommonProxy")
     public static CommonProxy proxy;
+
+    public UnconfinedLibMod() {
+        boolean standalone = Unconfined.isStandalone();
+        LOG.info("Unconfined Standalone: {}", standalone);
+        if (standalone) {
+            ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
+            modContainer.getMetadata().name += " (Standalone)";
+        }
+    }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {

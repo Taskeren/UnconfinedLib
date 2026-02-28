@@ -29,7 +29,7 @@ public final class UnconfinedConfig implements ConfigClassHandler.ConfigBearer {
         return config.getBoolean(
             "replace",
             CAT_MULTI_FLUID_BASIC,
-            UnconfinedAPI.isDevelopment(),
+            UnconfinedAPI.isStandaloneMode(),
             "true to enable multi-fluid support to existing machines (Chemical Reactors and Electrolyzers)"
         );
     }
