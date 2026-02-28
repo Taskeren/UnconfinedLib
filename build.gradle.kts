@@ -23,3 +23,9 @@ configurations.configureEach {
         force("com.github.GTNewHorizons:GTNHLib:0.7.10")
     }
 }
+
+idea {
+    module {
+        excludeDirs.add(file("run"))
+    }
+}

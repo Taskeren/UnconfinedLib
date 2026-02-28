@@ -10,7 +10,10 @@ import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fluids.FluidStack;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
+import unconfined.util.tier.Tier;
+import unconfined.util.tier.Voltage;
 
+import java.util.EnumMap;
 import java.util.function.Function;
 
 /// Minecraft-related utils
@@ -62,6 +65,14 @@ public final class UnconfinedUtils {
 
     public static <T> String toString(T[] src, Function<T, String> toString) {
         return "[" + COMMA_JOINER.join(Iterators.transform(Iterators.forArray(src), toString::apply)) + "]";
+    }
+
+    public static <T> EnumMap<Tier, T> ofTieredMap() {
+        return new EnumMap<>(Tier.class);
+    }
+
+    public static <T> EnumMap<Voltage, T> ofVoltageMap() {
+        return new EnumMap<>(Voltage.class);
     }
 
     public static final class Persist {

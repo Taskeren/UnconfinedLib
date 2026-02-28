@@ -7,21 +7,22 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import unconfined.api.UnconfinedAPI;
 import unconfined.mod.command.UnconfinedCommand;
 import unconfined.mod.gregtech.DebugMachineLoader;
+import unconfined.mod.gregtech.ExistingMachineReplacingLoader;
 
 import java.util.function.Supplier;
 
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
-        Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-
-        UnconfinedLibMod.LOG.info(Config.greeting);
-        UnconfinedLibMod.LOG.info("I am MyMod at version " + Tags.VERSION);
+        UnconfinedConfig.INSTANCE.getHandler().loadAll();
     }
 
     public void init(FMLInitializationEvent event) {
         if (UnconfinedAPI.isDebugMode()) {
             DebugMachineLoader.init();
+        }
+        if (UnconfinedConfig.INSTANCE.isReplacingExistingMachines()) {
+            ExistingMachineReplacingLoader.init();
         }
     }
 
