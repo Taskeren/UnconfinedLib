@@ -6,6 +6,7 @@
   "package": "unconfined.core.mixins",
   "mixins": [
     "misc.MTEBasicMachineWithRecipeAccessor",
+    "misc.RecipeMapBuilderMixin",
     "multifluid.MTEBasicMachineImplMixin",
     "multifluid.MTEBasicMachineMixin",
     "treecommand.CommandHelpMixin"
