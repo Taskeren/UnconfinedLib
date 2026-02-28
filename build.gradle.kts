@@ -38,7 +38,7 @@ val optInJar: TaskProvider<Jar> = tasks.register<Jar>("optInJar") {
     archiveClassifier = "standalone-dev"
     from(sourceSets.main.get().output)
     manifest {
-        attributes("Unconfined-Opt-In" to "true")
+        attributes("Unconfined-Standalone" to "true")
     }
 }
 
