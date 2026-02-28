@@ -14,6 +14,8 @@ import unconfined.util.UnconfinedUtils;
 import unconfined.util.tier.Tier;
 
 import java.util.EnumMap;
+import java.util.function.ToIntBiFunction;
+import java.util.function.ToIntFunction;
 
 import static gregtech.api.enums.MetaTileEntityIDs.CHEMICAL_REACTOR_IV;
 import static gregtech.api.enums.MetaTileEntityIDs.CHEMICAL_REACTOR_LV;
@@ -74,6 +76,10 @@ public class ExistingMachineReplacingLoader {
     /// @see gregtech.api.enums.MetaTileEntityIDs#CHEMICAL_REACTOR_LV
     /// @see LoaderMetaTileEntities#registerChemicalReactor()
     private static void cr() {
+        ToIntFunction<Tier> slot = (tier) -> {
+            if (tier.compareTo(Tier.HV) < 0) return 2;
+            return 3;
+        };
         MachineGenerator cr = (id, tier) -> new MultiFluidBasicMachineWithRecipe(
             id,
             "basicmachine.chemicalreactor.tier." + pad(tier),
@@ -83,6 +89,8 @@ public class ExistingMachineReplacingLoader {
             RecipeMaps.multiblockChemicalReactorRecipes,
             2,
             2,
+            slot.applyAsInt(tier),
+            slot.applyAsInt(tier),
             true,
             SoundResource.GTCEU_LOOP_CHEMICAL,
             MTEBasicMachineWithRecipe.SpecialEffects.NONE,
@@ -110,6 +118,14 @@ public class ExistingMachineReplacingLoader {
     /// @see MetaTileEntityIDs#ELECTROLYZER_LuV
     /// @see LoaderMetaTileEntities#registerElectrolyzer()
     private static void el() {
+        ToIntBiFunction<Tier, Boolean> slot = (tier, isOutput) -> {
+            // LV-MV: 1 input 2 output
+            if (tier.compareTo(Tier.HV) < 0) return isOutput ? 2 : 1;
+            // HV-IV: 2 input 3 output
+            if (tier.compareTo(Tier.LuV) < 0) return isOutput ? 3 : 2;
+            // Luv+: 3 input 3 output
+            return 3;
+        };
         MachineGenerator el = (id, tier) -> new MultiFluidBasicMachineWithRecipe(
             id,
             "basicmachine.electrolyzer.tier." + pad(tier),
@@ -119,6 +135,8 @@ public class ExistingMachineReplacingLoader {
             GTPPRecipeMaps.electrolyzerNonCellRecipes,
             2,
             6,
+            slot.applyAsInt(tier, false),
+            slot.applyAsInt(tier, true),
             true,
             SoundResource.GTCEU_LOOP_ELECTROLYZER,
             MTEBasicMachineWithRecipe.SpecialEffects.NONE,

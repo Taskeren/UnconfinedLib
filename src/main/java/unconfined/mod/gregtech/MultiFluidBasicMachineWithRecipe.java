@@ -1,6 +1,7 @@
 package unconfined.mod.gregtech;
 
 import gregtech.api.enums.SoundResource;
+import gregtech.api.enums.VoltageIndex;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -9,12 +10,14 @@ import gregtech.api.recipe.RecipeMap;
 import lombok.Getter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.ApiStatus;
 import unconfined.api.gregtech.UnconfinedMultiFluidBasicMachine;
-import unconfined.util.FinalArrayAccessor;
 import unconfined.core.mixins.misc.MTEBasicMachineWithRecipeAccessor;
+import unconfined.util.FinalArrayAccessor;
 import unconfined.util.fluidtank.IUnconfinedFluidTank;
 import unconfined.util.fluidtank.UnconfinedFluidTank;
+import unconfined.util.fluidtank.UnconfinedFluidTankDummy;
 import unconfined.util.fluidtank.UnconfinedFluidTankOverridden;
 
 /// A modified version of [MTEBasicMachineWithRecipe] that has multiple fluid slots.
@@ -34,122 +37,87 @@ public class MultiFluidBasicMachineWithRecipe extends MTEBasicMachineWithRecipe 
     @Getter
     protected final FluidStack[] recipeOutputFluids;
 
+    // @formatter:off
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays, Object[] aRecipe) {
-        super(
-            aID,
-            aName,
-            aNameRegional,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aSound,
-            aSpecialEffect,
-            aOverlays,
-            aRecipe
-        );
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays, aRecipe);
         inputFluids = null;
         outputFluids = null;
         recipeOutputFluids = null;
     }
 
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays, Object[] aRecipe) {
-        super(
-            aID,
-            aName,
-            aNameRegional,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aSound,
-            aSpecialEffect,
-            aOverlays,
-            aRecipe
-        );
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays, aRecipe);
         inputFluids = null;
         outputFluids = null;
         recipeOutputFluids = null;
     }
 
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, boolean usesFluids, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
-        super(
-            aID,
-            aName,
-            aNameRegional,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            usesFluids,
-            aSound,
-            aSpecialEffect,
-            aOverlays
-        );
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, usesFluids, aSound, aSpecialEffect, aOverlays);
         inputFluids = null;
         outputFluids = null;
         recipeOutputFluids = null;
     }
 
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
-        super(
-            aID,
-            aName,
-            aNameRegional,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aSound,
-            aSpecialEffect,
-            aOverlays
-        );
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays);
         inputFluids = null;
         outputFluids = null;
         recipeOutputFluids = null;
     }
 
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
-        super(
-            aID,
-            aName,
-            aNameRegional,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aSound,
-            aSpecialEffect,
-            aOverlays
-        );
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays);
         inputFluids = null;
         outputFluids = null;
         recipeOutputFluids = null;
     }
 
+    // Unconfined Start
+    public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays, Object[] aRecipe) {
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays, aRecipe);
+        inputFluids = new UnconfinedFluidTankDummy(inputSlotsFluid, aTankCapacity);
+        outputFluids = new UnconfinedFluidTankDummy(outputSlotsFluid, aTankCapacity);
+        recipeOutputFluids = null;
+    }
+
+    public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays, Object[] aRecipe) {
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays, aRecipe);
+        inputFluids = new UnconfinedFluidTankDummy(inputSlotsFluid, aTankCapacity);
+        outputFluids = new UnconfinedFluidTankDummy(outputSlotsFluid, aTankCapacity);
+        recipeOutputFluids = null;
+    }
+
+    public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, @MagicConstant(valuesFromClass = VoltageIndex.class) int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, boolean usesFluids, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, usesFluids, aSound, aSpecialEffect, aOverlays);
+        inputFluids = new UnconfinedFluidTankDummy(inputSlotsFluid, getDefaultCapacityForTier(aTier));
+        outputFluids = new UnconfinedFluidTankDummy(outputSlotsFluid, getDefaultCapacityForTier(aTier));
+        recipeOutputFluids = null;
+    }
+
+    public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays);
+        inputFluids = new UnconfinedFluidTankDummy(inputSlotsFluid, aTankCapacity);
+        outputFluids = new UnconfinedFluidTankDummy(outputSlotsFluid, aTankCapacity);
+        recipeOutputFluids = null;
+    }
+
+    public MultiFluidBasicMachineWithRecipe(int aID, String aName, String aNameRegional, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, SoundResource aSound, SpecialEffects aSpecialEffect, String aOverlays) {
+        super(aID, aName, aNameRegional, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aSound, aSpecialEffect, aOverlays);
+        inputFluids = new UnconfinedFluidTankDummy(inputSlotsFluid, aTankCapacity);
+        outputFluids = new UnconfinedFluidTankDummy(outputSlotsFluid, aTankCapacity);
+        recipeOutputFluids = null;
+    }
+    // Unconfined End
+
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(String aName, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, int aAmperage, ITexture[][][] aTextures, SoundResource aSound, SpecialEffects aSpecialEffect) {
-        super(
-            aName,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aAmperage,
-            aTextures,
-            aSound,
-            aSpecialEffect
-        );
+        super(aName, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aAmperage, aTextures, aSound, aSpecialEffect);
         inputFluids = UnconfinedFluidTank.builder()
             .slotCount(Math.min(3, aInputSlots))
             .capacity(aTankCapacity)
@@ -165,20 +133,9 @@ public class MultiFluidBasicMachineWithRecipe extends MTEBasicMachineWithRecipe 
         recipeOutputFluids = new FluidStack[outputFluids.getSlotCount()];
     }
 
+    @Deprecated
     public MultiFluidBasicMachineWithRecipe(String aName, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int aTankCapacity, int aAmperage, ITexture[][][] aTextures, ResourceLocation aSound, SpecialEffects aSpecialEffect) {
-        super(
-            aName,
-            aTier,
-            aDescription,
-            aRecipes,
-            aInputSlots,
-            aOutputSlots,
-            aTankCapacity,
-            aAmperage,
-            aTextures,
-            aSound,
-            aSpecialEffect
-        );
+        super(aName, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aAmperage, aTextures, aSound, aSpecialEffect);
         inputFluids = UnconfinedFluidTank.builder()
             .slotCount(Math.min(3, aInputSlots))
             .capacity(aTankCapacity)
@@ -193,6 +150,43 @@ public class MultiFluidBasicMachineWithRecipe extends MTEBasicMachineWithRecipe 
             .build();
         recipeOutputFluids = new FluidStack[outputFluids.getSlotCount()];
     }
+
+    // Unconfined Start
+    public MultiFluidBasicMachineWithRecipe(String aName, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, int aAmperage, ITexture[][][] aTextures, SoundResource aSound, SpecialEffects aSpecialEffect) {
+        super(aName, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aAmperage, aTextures, aSound, aSpecialEffect);
+        inputFluids = UnconfinedFluidTank.builder()
+            .slotCount(inputSlotsFluid)
+            .capacity(aTankCapacity)
+            .overridden(t -> UnconfinedFluidTankOverridden.setupInputOverriddenFromBasicMachine(t, this))
+            .cached(true)
+            .build();
+        outputFluids = UnconfinedFluidTank.builder()
+            .slotCount(outputSlotsFluid)
+            .capacity(aTankCapacity)
+            .overridden(t -> UnconfinedFluidTankOverridden.setupOutputOverriddenFromBasicMachine(t, this))
+            .cached(true)
+            .build();
+        recipeOutputFluids = new FluidStack[outputFluids.getSlotCount()];
+    }
+
+    public MultiFluidBasicMachineWithRecipe(String aName, int aTier, String[] aDescription, RecipeMap<?> aRecipes, int aInputSlots, int aOutputSlots, int inputSlotsFluid, int outputSlotsFluid, int aTankCapacity, int aAmperage, ITexture[][][] aTextures, ResourceLocation aSound, SpecialEffects aSpecialEffect) {
+        super(aName, aTier, aDescription, aRecipes, aInputSlots, aOutputSlots, aTankCapacity, aAmperage, aTextures, aSound, aSpecialEffect);
+        inputFluids = UnconfinedFluidTank.builder()
+            .slotCount(inputSlotsFluid)
+            .capacity(aTankCapacity)
+            .overridden(t -> UnconfinedFluidTankOverridden.setupInputOverriddenFromBasicMachine(t, this))
+            .cached(true)
+            .build();
+        outputFluids = UnconfinedFluidTank.builder()
+            .slotCount(outputSlotsFluid)
+            .capacity(aTankCapacity)
+            .overridden(t -> UnconfinedFluidTankOverridden.setupOutputOverriddenFromBasicMachine(t, this))
+            .cached(true)
+            .build();
+        recipeOutputFluids = new FluidStack[outputFluids.getSlotCount()];
+    }
+    // Unconfined End
+    // @formatter:on
 
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
@@ -204,6 +198,10 @@ public class MultiFluidBasicMachineWithRecipe extends MTEBasicMachineWithRecipe 
             self.unconfined$mRecipes(),
             this.mInputSlotCount,
             this.mOutputItems == null ? 0 : this.mOutputItems.length,
+            this.inputFluids == null ? Math.min(3, mInputSlotCount) : this.inputFluids.getSlotCount(),
+            this.outputFluids == null
+                ? Math.min(3, this.mOutputItems == null ? 0 : this.mOutputItems.length)
+                : this.outputFluids.getSlotCount(),
             self.unconfined$mTankCapacity(),
             this.mAmperage,
             this.mTextures,
@@ -216,5 +214,9 @@ public class MultiFluidBasicMachineWithRecipe extends MTEBasicMachineWithRecipe 
     @Override
     public FinalArrayAccessor<FluidStack> getRecipeOutputAccessor() {
         return () -> recipeOutputFluids;
+    }
+
+    public static int getDefaultCapacityForTier(@MagicConstant(valuesFromClass = VoltageIndex.class) int tier) {
+        return getCapacityForTier(tier);
     }
 }

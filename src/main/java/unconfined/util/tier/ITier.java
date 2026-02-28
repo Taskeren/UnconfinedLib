@@ -1,7 +1,11 @@
 package unconfined.util.tier;
 
+import gregtech.api.enums.VoltageIndex;
+import org.intellij.lang.annotations.MagicConstant;
+
 public interface ITier {
     /// @return the tier in integer form
+    @MagicConstant(valuesFromClass = VoltageIndex.class)
     int getValue();
 
     /// @return the short name (e.g., LV, LuV, UMV)
