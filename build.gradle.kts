@@ -51,7 +51,14 @@ val reobfOptInJar = tasks.register<ReobfuscatedJar>("reobfOptInJar") {
     methodCsv = tasks.generateForgeSrgMappings.flatMap { it.methodsCsv }
     exceptorCfg = tasks.generateForgeSrgMappings.flatMap { it.srgExc }
     recompMcJar = tasks.packagePatchedMc.flatMap { it.archiveFile }
-    referenceClasspath.from(configurations.runtimeClasspath)
+    referenceClasspath.from(
+        configurations.runtimeClasspath,
+        tasks.packageMcLauncher,
+        tasks.packagePatchedMc,
+        configurations.patchedMinecraft,
+        configurations.runtimeClasspath,
+        configurations.compileClasspath,
+    )
 }
 
 tasks.build {
