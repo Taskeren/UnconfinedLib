@@ -61,6 +61,6 @@ val reobfOptInJar = tasks.register<ReobfuscatedJar>("reobfOptInJar") {
     )
 }
 
-tasks.build {
+tasks.assemble {
     dependsOn(reobfOptInJar)
 }
