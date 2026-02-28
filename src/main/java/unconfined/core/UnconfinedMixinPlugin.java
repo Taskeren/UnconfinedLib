@@ -1,5 +1,7 @@
 package unconfined.core;
 
+import com.gtnewhorizon.gtnhmixins.ILateMixinLoader;
+import com.gtnewhorizon.gtnhmixins.LateMixin;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.Nullable;
@@ -7,11 +9,13 @@ import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Log4j2
-public final class UnconfinedMixinPlugin implements IMixinConfigPlugin {
+@LateMixin
+public final class UnconfinedMixinPlugin implements IMixinConfigPlugin, ILateMixinLoader {
     private static final String UNC_MIXIN_PKG_PREFIX = "unconfined.core.mixins.";
     private final UnconfinedCoreConfig config = UnconfinedCoreConfig.INSTANCE;
 
@@ -58,5 +62,15 @@ public final class UnconfinedMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String s, ClassNode classNode, String s1, IMixinInfo iMixinInfo) {
+    }
+
+    @Override
+    public String getMixinConfig() {
+        return "mixins.unconfinedlib.json";
+    }
+
+    @Override
+    public List<String> getMixins(Set<String> loadedMods) {
+        return new ArrayList<>();
     }
 }
