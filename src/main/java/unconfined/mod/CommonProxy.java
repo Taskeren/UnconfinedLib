@@ -6,7 +6,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import unconfined.api.UnconfinedAPI;
 import unconfined.mod.command.UnconfinedCommand;
-import unconfined.mod.gregtech.MultiFluidChemicalReactorLoader;
+import unconfined.mod.gregtech.DebugMachineLoader;
 
 import java.util.function.Supplier;
 
@@ -21,7 +21,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         if (UnconfinedAPI.isDebugMode()) {
-            MultiFluidChemicalReactorLoader.init();
+            DebugMachineLoader.init();
         }
     }
 
