@@ -19,6 +19,10 @@ dependencies {
 
     // jspecify
     compileOnly(libs.jspecify)
+
+    // TODO: shadowing or something else
+    implementation(libs.mojang.dfu)
+    implementation(libs.mojang.brigadier)
 }
 
 configurations.configureEach {
