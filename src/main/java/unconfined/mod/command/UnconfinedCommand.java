@@ -2,6 +2,7 @@ package unconfined.mod.command;
 
 import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.util.ChatComponentText;
@@ -10,6 +11,7 @@ import net.minecraft.util.EnumChatFormatting;
 import unconfined.util.command.TreeCommand;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class UnconfinedCommand extends TreeCommand {
 
@@ -51,6 +53,25 @@ public class UnconfinedCommand extends TreeCommand {
             sender.addChatMessage(new ChatComponentText("FOO!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)
                 .setItalic(true)));
         }
+    }
+
+    static ICommand asCommand(String name, String usage, BiConsumer<ICommandSender, String[]> handler) {
+        return new CommandBase() {
+            @Override
+            public String getCommandName() {
+                return name;
+            }
+
+            @Override
+            public String getCommandUsage(ICommandSender sender) {
+                return usage;
+            }
+
+            @Override
+            public void processCommand(ICommandSender sender, String[] args) {
+                handler.accept(sender, args);
+            }
+        };
     }
 
 }
