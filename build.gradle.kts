@@ -21,8 +21,8 @@ dependencies {
     compileOnly(libs.jspecify)
 
     // TODO: shadowing or something else
-    implementation(libs.mojang.dfu)
-    implementation(libs.mojang.brigadier)
+    shadowImplementation(libs.mojang.dfu) { isTransitive = false }
+    shadowImplementation(libs.mojang.brigadier) { isTransitive = false }
 }
 
 configurations.configureEach {
