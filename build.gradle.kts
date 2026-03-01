@@ -1,6 +1,3 @@
-import com.gtnewhorizons.retrofuturagradle.mcp.ReobfuscatedJar
-import org.gradle.jvm.tasks.Jar
-
 plugins {
     id("com.github.ElytraServers.elytra-conventions") version "v1.1.2"
     id("com.gtnewhorizons.gtnhconvention")
@@ -19,6 +16,10 @@ dependencies {
 
     // jspecify
     compileOnly(libs.jspecify)
+
+    // TODO: shadowing or something else
+    shadowImplementation(libs.mojang.dfu) { isTransitive = false }
+    shadowImplementation(libs.mojang.brigadier) { isTransitive = false }
 }
 
 configurations.configureEach {
@@ -34,33 +35,18 @@ idea {
 }
 
 // Generate Standalone JAR
-val optInJar: TaskProvider<Jar> = tasks.register<Jar>("optInJar") {
-    archiveClassifier = "standalone-dev"
-    from(sourceSets.main.get().output)
+val standaloneJar = tasks.register<EditManifestJar>("makeStandaloneJar") {
+    inputJar = tasks.reobfJar.flatMap { it.archiveFile }
+    archiveClassifier = "standalone"
+
     manifest {
-        attributes("Unconfined-Standalone" to "true")
+        attributes(
+            "Unconfined-Standalone" to "true",
+            "Unconfined-Standalone-Vendor" to "Folia",
+        )
     }
 }
 
-val reobfOptInJar = tasks.register<ReobfuscatedJar>("reobfOptInJar") {
-    archiveClassifier = "standalone"
-    setInputJarFromTask(optInJar)
-    mcVersion = minecraft.mcVersion
-    srg = tasks.generateForgeSrgMappings.flatMap { it.mcpToSrg }
-    fieldCsv = tasks.generateForgeSrgMappings.flatMap { it.fieldsCsv }
-    methodCsv = tasks.generateForgeSrgMappings.flatMap { it.methodsCsv }
-    exceptorCfg = tasks.generateForgeSrgMappings.flatMap { it.srgExc }
-    recompMcJar = tasks.packagePatchedMc.flatMap { it.archiveFile }
-    referenceClasspath.from(
-        configurations.runtimeClasspath,
-        tasks.packageMcLauncher,
-        tasks.packagePatchedMc,
-        configurations.patchedMinecraft,
-        configurations.runtimeClasspath,
-        configurations.compileClasspath,
-    )
-}
-
 tasks.assemble {
-    dependsOn(reobfOptInJar)
+    dependsOn(standaloneJar)
 }
