@@ -1,7 +1,7 @@
 package net.minecraft.nbt;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Maps;
 import com.google.common.primitives.UnsignedBytes;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -29,6 +29,7 @@ import org.jspecify.annotations.Nullable;
 import unconfined.util.chat.Component;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
@@ -685,13 +686,13 @@ public class SnbtGrammar {
                 if (list.isEmpty()) {
                     return t2;
                 } else {
-                    Builder<T, T> builder = ImmutableMap.builderWithExpectedSize(list.size());
+                    HashMap<T, T> builder = Maps.newHashMapWithExpectedSize(list.size());
 
                     for (Entry<String, T> entry : list) {
                         builder.put(ops.createString(entry.getKey()), entry.getValue());
                     }
 
-                    return ops.createMap(builder.buildKeepingLast());
+                    return ops.createMap(ImmutableMap.copyOf(builder));
                 }
             }
         );
