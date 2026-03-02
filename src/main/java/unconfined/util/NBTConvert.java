@@ -69,21 +69,23 @@ public final class NBTConvert {
     }
 
     public static Tag toModern(NBTBase tag) {
+        // @formatter:off
         return switch (tag) {
-            case NBTTagCompound t -> toModern(t);
-            case NBTTagList t -> toModern(t);
+            case NBTTagCompound  t -> toModern(t);
+            case NBTTagList      t -> toModern(t);
             case NBTTagByteArray t -> toModern(t);
-            case NBTTagIntArray t -> toModern(t);
-            case NBTTagByte t -> toModern(t);
-            case NBTTagShort t -> toModern(t);
-            case NBTTagInt t -> toModern(t);
-            case NBTTagLong t -> toModern(t);
-            case NBTTagFloat t -> toModern(t);
-            case NBTTagDouble t -> toModern(t);
-            case NBTTagString t -> toModern(t);
-            case NBTTagEnd t -> toModern(t);
+            case NBTTagIntArray  t -> toModern(t);
+            case NBTTagByte      t -> toModern(t);
+            case NBTTagShort     t -> toModern(t);
+            case NBTTagInt       t -> toModern(t);
+            case NBTTagLong      t -> toModern(t);
+            case NBTTagFloat     t -> toModern(t);
+            case NBTTagDouble    t -> toModern(t);
+            case NBTTagString    t -> toModern(t);
+            case NBTTagEnd       t -> toModern(t);
             default -> throw new RuntimeException("Invalid tag type: " + tag);
         };
+        // @formatter:on
     }
 
     public static CompoundTag toModern(NBTTagCompound tag) {
@@ -144,21 +146,23 @@ public final class NBTConvert {
     }
 
     public static NBTBase toLegacy(Tag tag) {
+        // @formatter:off
         return switch (tag) {
-            case CompoundTag t -> toLegacy(t);
-            case ListTag t -> toLegacy(t);
+            case CompoundTag  t -> toLegacy(t);
+            case ListTag      t -> toLegacy(t);
             case ByteArrayTag t -> toLegacy(t);
-            case IntArrayTag t -> toLegacy(t);
+            case IntArrayTag  t -> toLegacy(t);
             case LongArrayTag t -> toLegacy(t);
-            case ByteTag t -> toLegacy(t);
-            case ShortTag t -> toLegacy(t);
-            case IntTag t -> toLegacy(t);
-            case LongTag t -> toLegacy(t);
-            case FloatTag t -> toLegacy(t);
-            case DoubleTag t -> toLegacy(t);
-            case StringTag t -> toLegacy(t);
-            case EndTag t -> toLegacy(t);
+            case ByteTag      t -> toLegacy(t);
+            case ShortTag     t -> toLegacy(t);
+            case IntTag       t -> toLegacy(t);
+            case LongTag      t -> toLegacy(t);
+            case FloatTag     t -> toLegacy(t);
+            case DoubleTag    t -> toLegacy(t);
+            case StringTag    t -> toLegacy(t);
+            case EndTag       t -> toLegacy(t);
         };
+        // @formatter:on
     }
 
     public static NBTTagCompound toLegacy(CompoundTag tag) {
@@ -189,11 +193,7 @@ public final class NBTConvert {
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public static NBTTagIntArray toLegacy(LongArrayTag tag) {
-        long[] longArray = tag.getAsLongArray();
-        int[] intArray = new int[tag.size()];
-        for (int i = 0; i < intArray.length; i++) intArray[i] = (int) longArray[i];
-
-        return new NBTTagIntArray(intArray);
+        return new NBTTagIntArray(Utils.castLongArrayToIntArray(tag.getAsLongArray()));
     }
 
     public static NBTTagByte toLegacy(ByteTag tag) {

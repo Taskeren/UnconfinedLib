@@ -1,11 +1,11 @@
 package net.minecraft.nbt;
 
 import com.google.common.annotations.VisibleForTesting;
-import it.unimi.dsi.fastutil.io.FastBufferedInputStream;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import org.jspecify.annotations.Nullable;
 import unconfined.util.DelegateDataOutput;
+import unconfined.util.FastBufferedInputStream;
 import unconfined.util.UInternals;
 
 import java.io.BufferedOutputStream;

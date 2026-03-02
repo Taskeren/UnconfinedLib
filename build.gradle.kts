@@ -17,7 +17,7 @@ dependencies {
     // jspecify
     compileOnly(libs.jspecify)
 
-    // TODO: shadowing or something else
+    // DFU and Brigadier from Mojang
     shadowImplementation(libs.mojang.dfu) { isTransitive = false }
     shadowImplementation(libs.mojang.brigadier) { isTransitive = false }
 }
@@ -35,15 +35,12 @@ idea {
 }
 
 // Generate Standalone JAR
-val standaloneJar = tasks.register<EditManifestJar>("makeStandaloneJar") {
+val standaloneJar = tasks.register<EditManifestJar>("standaloneJar") {
     inputJar = tasks.reobfJar.flatMap { it.archiveFile }
     archiveClassifier = "standalone"
 
     manifest {
-        attributes(
-            "Unconfined-Standalone" to "true",
-            "Unconfined-Standalone-Vendor" to "Folia",
-        )
+        attributes("Unconfined-Standalone" to "true")
     }
 }
 
