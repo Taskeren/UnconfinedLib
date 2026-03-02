@@ -95,4 +95,10 @@ public final class Utils {
         return value;
     }
 
+    public static int[] castLongArrayToIntArray(long[] input) {
+        int[] output = new int[input.length];
+        for (int i = 0; i < output.length; i++) output[i] = (int) input[i];
+        return output;
+    }
+
 }
