@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+@SuppressWarnings("unused")
 public class InputConstants {
     public static final int KEY_0 = 48;
     public static final int KEY_1 = 49;
