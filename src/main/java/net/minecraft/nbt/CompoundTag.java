@@ -557,7 +557,7 @@ public final class CompoundTag implements Tag {
         return tag == null
             ? Optional.empty()
             : codec.parse(ops, tag)
-            .resultOrPartial(p_400883_ -> LOGGER.error("Failed to read field ({}={}): {}", key, tag, p_400883_));
+            .resultOrPartial(p_400883_ -> LOGGER.error("Failed to read self ({}={}): {}", key, tag, p_400883_));
     }
 
     public <T> Optional<T> read(MapCodec<T> mapCodec) {

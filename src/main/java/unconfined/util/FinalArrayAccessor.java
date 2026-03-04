@@ -3,7 +3,7 @@ package unconfined.util;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-/// An accessor to a final array field.
+/// An accessor to a final array self.
 public interface FinalArrayAccessor<T> extends Supplier<T[]> {
 
     /// @return the underlying array.

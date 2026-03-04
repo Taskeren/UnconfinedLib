@@ -8,6 +8,7 @@ import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import unconfined.util.chat.ChatBuilder;
 import unconfined.util.command.TreeCommand;
 
 import java.util.List;
@@ -50,6 +51,17 @@ public class UnconfinedCommand extends TreeCommand {
 
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
+            if (args.length > 0) { // print some nonsense
+                int size = parseInt(sender, args[0]);
+                for (int i = 0; i < size; i++) {
+                    sender.addChatMessage(ChatBuilder.text("Foo: ")
+                        .color(EnumChatFormatting.GRAY)
+                        .append(ChatBuilder.text(String.valueOf(Math.random() * 100))
+                            .color(EnumChatFormatting.YELLOW)));
+                }
+                return;
+            }
+
             sender.addChatMessage(new ChatComponentText("FOO!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)
                 .setItalic(true)));
         }
