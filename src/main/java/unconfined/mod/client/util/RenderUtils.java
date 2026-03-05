@@ -1,6 +1,7 @@
 package unconfined.mod.client.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import org.joml.Vector2i;
 import org.jspecify.annotations.Nullable;
@@ -11,6 +12,7 @@ public final class RenderUtils {
 
     private static @Nullable Minecraft minecraft;
     private static @Nullable ScaledResolution scaledResolution;
+    private static @Nullable FontRenderer fontRenderer;
 
     public static Minecraft getMinecraft() {
         if (minecraft != null) return minecraft;
@@ -25,6 +27,13 @@ public final class RenderUtils {
             return scaledResolution = new ScaledResolution(minecraft, minecraft.displayWidth, minecraft.displayHeight);
         }
         return scaledResolution;
+    }
+
+    public static FontRenderer getFontRenderer() {
+        if (fontRenderer == null) {
+            return fontRenderer = Assertions.checkNotNull(getMinecraft().fontRenderer, "fontRenderer cannot be null");
+        }
+        return fontRenderer;
     }
 
     public static Vector2i getMouseVecRaw() {

@@ -1,6 +1,5 @@
 package unconfined.mod.client.screen;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +14,7 @@ import net.minecraftforge.client.ClientCommandHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.TestOnly;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
@@ -31,9 +31,10 @@ import java.util.Objects;
 
 @NullMarked
 public class ChatScreen extends GuiChat {
-    private static final boolean RENDER_DEBUG_INFO = Boolean.getBoolean("unconfined.chatScreen.debug");
+    private static final boolean DEBUG = Boolean.getBoolean("unconfined.chatScreen.debug");
 
-    protected static final FontRenderer FONT = Minecraft.getMinecraft().fontRenderer;
+    protected static final FontRenderer FONT = RenderUtils.getFontRenderer();
+
     protected static final int MAX_VISIBLE_COUNT = 16;
     protected static int UNSELECTED_COLOR = 0xFFAAAAAA;
     protected static int SELECTED_COLOR = 0xFFFFFF00;
@@ -41,12 +42,17 @@ public class ChatScreen extends GuiChat {
     protected static int WHITE_COLOR = 0xFFFFFFFF;
 
     protected final SuggestWidget suggest = new SuggestWidget();
+    /// `true` when the gui is opened with a slash, which means we need to immediately request the suggestions.
+    protected final boolean guiOpenedWithSlash;
 
     public ChatScreen() {
+        super();
+        this.guiOpenedWithSlash = false;
     }
 
     public ChatScreen(String value) {
         super(value);
+        this.guiOpenedWithSlash = value.equals("/");
     }
 
     public ChatScreen(GuiChat guiChat) {
@@ -54,18 +60,16 @@ public class ChatScreen extends GuiChat {
     }
 
     protected static String getInitialChatString(GuiChat guiChat) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.currentScreen == null && mc.gameSettings.keyBindCommand.getIsKeyPressed()) {
-            return "/";
-        } else {
-            return ((GuiChatAccessor) guiChat).getDefaultInputFieldText();
-        }
+        return ((GuiChatAccessor) guiChat).getDefaultInputFieldText();
     }
 
     @Override
     public void initGui() {
         super.initGui();
         this.suggest.setTextField(this.inputField);
+        if(this.guiOpenedWithSlash) {
+            this.suggest.tryRequestSuggestions();
+        }
     }
 
     @Override // invoked when receiving suggestions
@@ -140,7 +144,12 @@ public class ChatScreen extends GuiChat {
     @RequiredArgsConstructor
     public static class SuggestWidget {
         protected @Nullable GuiTextField textField;
+        /// the suggestion list
+        ///
+        /// - `null`: uninitialized, request sent but not received, or not sent.
+        /// - otherwise: the suggestions; empty list is also valid (for no suggestion).
         protected @Nullable List<String> suggestion;
+        /// the selection index of suggestions, or `-1` if not capable.
         protected int selection = -1;
 
         protected int lastRequestedHash;
@@ -158,6 +167,8 @@ public class ChatScreen extends GuiChat {
             // add hook to render our suggested text
             if (this.textField instanceof IGuiTextFieldExtension ext) {
                 ext.unconfined$addPostRenderTextCallback(this::callback);
+            } else {
+                throw new AssertionError("GuiTextField is not implementing IGuiTextFieldExtension, is mixin down?");
             }
         }
 
@@ -172,9 +183,10 @@ public class ChatScreen extends GuiChat {
         }
 
         public void render(int mouseX, int mouseY) {
-            if (RENDER_DEBUG_INFO) renderScreenDebugInfo();
+            if (DEBUG) renderScreenDebugInfo();
         }
 
+        @TestOnly
         protected void renderScreenDebugInfo() {
             FONT.drawString("[ChatScreenDebug]", 0, 0, 0xFF000000);
             String selected = this.suggestion != null && this.selection > -1
@@ -226,7 +238,7 @@ public class ChatScreen extends GuiChat {
                 // but it will return false if we've already requested before.
                 ClientCommandHandler.instance.autoComplete(leftOfCursor, textFieldValue);
                 Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(leftOfCursor));
-                log.info("Requesting for '{}'", leftOfCursor);
+                if (DEBUG) log.info("Requesting suggestions for '{}' (hash {})", leftOfCursor, hash);
                 this.lastRequestedHash = hash;
                 return true;
             }
@@ -234,7 +246,10 @@ public class ChatScreen extends GuiChat {
         }
 
         public void updateSuggestion(List<String> suggestion) {
-            log.info("Recv suggestion: [{}]", Joiner.on(", ").join(suggestion));
+            if (DEBUG) log.info(
+                "Received suggestions '{}' (hash {})",
+                String.join(", ", suggestion), this.lastRequestedHash
+            );
             if (this.suggestion == null || !this.suggestion.equals(suggestion)) {
                 this.suggestion = suggestion;
                 this.selection = -1;
