@@ -255,6 +255,8 @@ public class ChatScreen extends GuiChat {
                 this.selection = -1;
                 if (!this.suggestion.isEmpty()) {
                     this.candidateList = new CandidateListWidget(this, this.suggestion);
+                } else {
+                    this.candidateList = null;
                 }
             }
         }
