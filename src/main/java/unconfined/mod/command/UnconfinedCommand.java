@@ -8,10 +8,13 @@ import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
+import unconfined.mod.client.util.InputConstants;
 import unconfined.util.chat.ChatBuilder;
 import unconfined.util.command.TreeCommand;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class UnconfinedCommand extends TreeCommand {
@@ -52,6 +55,11 @@ public class UnconfinedCommand extends TreeCommand {
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
             if (args.length > 0) { // print some nonsense
+                if(Objects.equals(args[0], "key")) {
+                    InputConstants.mapToInputConstant(Keyboard.KEY_0);
+                    return;
+                }
+
                 int size = parseInt(sender, args[0]);
                 for (int i = 0; i < size; i++) {
                     sender.addChatMessage(ChatBuilder.text("Foo: ")

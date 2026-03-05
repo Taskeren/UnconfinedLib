@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.input.Keyboard;
 
 import java.lang.annotation.ElementType;
@@ -14,6 +15,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+/// The InputConstants from modern Minecraft.
+@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class InputConstants {
     public static final int KEY_0 = 48;
@@ -71,11 +74,17 @@ public class InputConstants {
     public static final int KEY_F17 = 306;
     public static final int KEY_F18 = 307;
     public static final int KEY_F19 = 308;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F20 = 309;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F21 = 310;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F22 = 311;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F23 = 312;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F24 = 313;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_F25 = 314;
     public static final int KEY_NUMLOCK = 282;
     public static final int KEY_NUMPAD0 = 320;
@@ -110,50 +119,81 @@ public class InputConstants {
     public static final int KEY_SLASH = 47;
     public static final int KEY_SPACE = 32;
     public static final int KEY_TAB = 258;
+    @MappingConfiguration(name = "KEY_LMENU")
     public static final int KEY_LALT = 342;
     public static final int KEY_LCONTROL = 341;
     public static final int KEY_LSHIFT = 340;
+    @MappingConfiguration(name = "KEY_LMETA")
     public static final int KEY_LSUPER = 343;
+    @MappingConfiguration(name = "KEY_RMENU")
     public static final int KEY_RALT = 346;
     public static final int KEY_RCONTROL = 345;
     public static final int KEY_RSHIFT = 344;
+    @MappingConfiguration(name = "KEY_RMETA")
     public static final int KEY_RSUPER = 347;
     public static final int KEY_RETURN = 257;
     public static final int KEY_ESCAPE = 256;
+    @MappingConfiguration(name = "KEY_BACK")
     public static final int KEY_BACKSPACE = 259;
     public static final int KEY_DELETE = 261;
     public static final int KEY_END = 269;
     public static final int KEY_HOME = 268;
     public static final int KEY_INSERT = 260;
+    @MappingConfiguration(name = "KEY_NEXT")
     public static final int KEY_PAGEDOWN = 267;
+    @MappingConfiguration(name = "KEY_PRIOR")
     public static final int KEY_PAGEUP = 266;
+    @MappingConfiguration(name = "KEY_CAPITAL")
     public static final int KEY_CAPSLOCK = 280;
     public static final int KEY_PAUSE = 284;
+    @MappingConfiguration(name = "KEY_SCROLL")
     public static final int KEY_SCROLLLOCK = 281;
+    @MappingConfiguration(ignore = true)
     public static final int KEY_PRINTSCREEN = 283;
+
+    @MappingConfiguration(ignore = true)
     public static final int PRESS = 1;
+    @MappingConfiguration(ignore = true)
     public static final int RELEASE = 0;
+    @MappingConfiguration(ignore = true)
     public static final int REPEAT = 2;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_LEFT = 0;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_RIGHT = 1;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_MIDDLE = 2;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_4 = 3;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_5 = 4;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_6 = 5;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_7 = 6;
+    @MappingConfiguration(ignore = true)
     public static final int MOUSE_BUTTON_8 = 0;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_SHIFT = 1;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_CONTROL = 2;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_ALT = 4;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_SUPER = 8;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_CAPS_LOCK = 16;
+    @MappingConfiguration(ignore = true)
     public static final int MOD_NUM_LOCK = 32;
+    @MappingConfiguration(ignore = true)
     public static final int CURSOR = 208897;
+    @MappingConfiguration(ignore = true)
     public static final int CURSOR_DISABLED = 212995;
+    @MappingConfiguration(ignore = true)
     public static final int CURSOR_NORMAL = 212993;
 
     /// Used to represent a Keyboard value that can't be converted to a InputConstants value.
-    @MappingConfiguration(name = "$", ignore = true)
+    @MappingConfiguration(ignore = true)
     public static final int INVALID = -1;
 
     @Retention(RetentionPolicy.CLASS)
@@ -165,7 +205,7 @@ public class InputConstants {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     private @interface MappingConfiguration {
-        String name();
+        String name() default "";
 
         boolean ignore() default false;
     }
@@ -183,14 +223,23 @@ public class InputConstants {
                     && Modifier.isStatic(field.getModifiers())
                 ) {
                     MappingConfiguration mapping = field.getAnnotation(MappingConfiguration.class);
-                    if (mapping != null && mapping.ignore()) {
-                        LOG.debug("Ignored {}", field);
-                        continue;
+
+                    boolean ignore;
+                    String name;
+                    if (mapping != null) {
+                        ignore = mapping.ignore();
+                        name = mapping.name().isEmpty() ? field.getName() : mapping.name();
+                    } else {
+                        ignore = false;
+                        name = field.getName();
                     }
 
-                    String keyboardFieldName = mapping != null ? mapping.name() : field.getName();
-                    IC_TO_KBD.put(field.getInt(null), Keyboard.class.getDeclaredField(keyboardFieldName).getInt(null));
-                    KBD_TO_IC.put(Keyboard.class.getDeclaredField(keyboardFieldName).getInt(null), field.getInt(null));
+                    if (ignore) {
+                        LOG.debug("Ignored {}", field);
+                    } else {
+                        IC_TO_KBD.put(field.getInt(null), Keyboard.class.getDeclaredField(name).getInt(null));
+                        KBD_TO_IC.put(Keyboard.class.getDeclaredField(name).getInt(null), field.getInt(null));
+                    }
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 LOG.warn("Failed to get mapped value from Keyboard for {}", field.getName(), e);
