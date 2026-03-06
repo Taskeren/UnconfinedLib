@@ -32,9 +32,9 @@ public class GuiTextFieldMixin implements IGuiTextFieldExtension {
 
     @Inject(method = "drawTextBox", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;III)I", ordinal = 0, shift = At.Shift.AFTER))
     private void unconfined$afterRenderText(CallbackInfo ci,
-                                            @Local(ordinal = 5, name = "j1") int xPos,
-                                            @Local(ordinal = 4, name = "i1") int yPos,
-                                            @Local(ordinal = 1, name = "s1") String text) {
+                                            @Local(index = 9  /* j1 */) int xPos,
+                                            @Local(index = 8  /* i1 */) int yPos,
+                                            @Local(index = 10 /* s1 */) String text) {
         if (this.unconfined$postRenderTextCallback.isNotEmpty()) {
             int textWidth = field_146211_a.getStringWidth(text);
             PostRenderTextArgs args = new PostRenderTextArgs((GuiTextField) (Object) this, xPos, yPos, text, textWidth);
