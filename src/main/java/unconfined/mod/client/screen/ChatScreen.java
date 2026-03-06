@@ -373,10 +373,6 @@ public class ChatScreen extends GuiChat {
                 }
             }
         }
-
-        private void cursorMoveCallback() {
-            this.onTextUpdated();
-        }
     }
 
     protected static int getStartIndexOfWordBeforeCursor(GuiTextField textField) {
