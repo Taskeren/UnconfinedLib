@@ -10,5 +10,9 @@
     "multifluid.MTEBasicMachineImplMixin",
     "multifluid.MTEBasicMachineMixin",
     "treecommand.CommandHelpMixin"
+  ],
+  "client": [
+    "misc.GuiChatAccessor",
+    "misc.GuiTextFieldMixin"
   ]
 }

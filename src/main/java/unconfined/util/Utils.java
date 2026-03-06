@@ -16,6 +16,9 @@ import java.util.function.IntFunction;
 @SuppressWarnings("unused")
 public final class Utils {
 
+    private static Consumer<?> EMPTY_CONSUMER = _ -> {
+    };
+
     @Contract("_, _ -> param1")
     public static <T> T make(T value, Consumer<T> applier) {
         applier.accept(value);
@@ -75,6 +78,14 @@ public final class Utils {
         return ret;
     }
 
+    @ApiStatus.Experimental
+    public static <T> T[] mapArrayInplace(T[] source, Function<T, T> mapper) {
+        for (int i = 0; i < source.length; i++) {
+            source[i] = mapper.apply(source[i]);
+        }
+        return source;
+    }
+
     public static <T> int countNull(@Nullable T[] array) {
         int count = 0;
         for (T element : array) {
@@ -99,6 +110,28 @@ public final class Utils {
         int[] output = new int[input.length];
         for (int i = 0; i < output.length; i++) output[i] = (int) input[i];
         return output;
+    }
+
+    public static int mod(int a, int n) {
+        if (n == 0) throw new ArithmeticException("Cannot divide by zero");
+        return (a % n + n) % n;
+    }
+
+    public static @Nullable String getLongestString(Iterable<String> iterable) {
+        int len = -1;
+        String longest = null;
+        for (String s : iterable) {
+            if (s.length() > len) {
+                len = s.length();
+                longest = s;
+            }
+        }
+        return longest;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Consumer<T> emptyConsumer() {
+        return (Consumer<T>) EMPTY_CONSUMER;
     }
 
 }
