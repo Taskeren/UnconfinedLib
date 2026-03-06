@@ -117,10 +117,6 @@ public class CandidateListWidget {
             selectAndClose();
             return true;
         }
-        if (keyCode == Keyboard.KEY_RIGHT) {
-            selectAndClose();
-            return true;
-        }
         return false;
     }
 

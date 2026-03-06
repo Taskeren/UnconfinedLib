@@ -67,7 +67,7 @@ public class ChatScreen extends GuiChat {
     public void initGui() {
         super.initGui();
         this.suggest.setTextField(this.inputField);
-        if(this.guiOpenedWithSlash) {
+        if (this.guiOpenedWithSlash) {
             this.suggest.tryRequestSuggestions();
         }
     }
@@ -373,6 +373,10 @@ public class ChatScreen extends GuiChat {
                 }
             }
         }
+
+        private void cursorMoveCallback() {
+            this.onTextUpdated();
+        }
     }
 
     protected static int getStartIndexOfWordBeforeCursor(GuiTextField textField) {
@@ -388,8 +392,16 @@ public class ChatScreen extends GuiChat {
     }
 
     protected static void deleteLastWordBeforeCursor(GuiTextField textField) {
+        int cursorIndex = textField.getCursorPosition();
+        // characters after the cursor
+        String text = textField.getText();
+        int wsIndex = text.indexOf(' ', cursorIndex);
+        if (wsIndex == -1) wsIndex = text.length();
+        textField.deleteFromCursor(wsIndex - cursorIndex);
+
+        // characters before the cursor
         int startOfLastWordBeforeCursor = getStartIndexOfWordBeforeCursor(textField);
-        textField.deleteFromCursor(startOfLastWordBeforeCursor - textField.getCursorPosition());
+        textField.deleteFromCursor(startOfLastWordBeforeCursor - cursorIndex);
     }
 
 }
